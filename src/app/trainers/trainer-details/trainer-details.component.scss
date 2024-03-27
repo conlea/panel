@@ -1,0 +1,138 @@
+#trainerDetails {
+  padding: 0;
+  .trainerDetailsHead {
+    background-color: #fff;
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    & > a {
+      color: #8997ab;
+      font-size: 1.6rem;
+      line-height: 2rem;
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+
+      mat-icon {
+        margin-right: 6px;
+        font-size: 2rem;
+      }
+    }
+
+    .groupBtn {
+      margin: 0 -8px;
+      display: flex;
+      align-items: center;
+
+      a {
+        margin: 0 8px;
+        font-weight: 500;
+        color: #0076ff;
+        font-size: 1.3rem;
+        line-height: 1.7rem;
+        display: flex;
+        align-items: center;
+
+        mat-icon {
+          transform: rotate(180deg);
+        }
+      }
+
+      button {
+        margin: 0 8px;
+        border-radius: 4px;
+        border: 1px solid #0076ff;
+        font-size: 1.3rem;
+        padding: 0px 12px;
+        box-shadow: none;
+        transition: all 0.3s ease;
+
+        .mat-button-wrapper {
+          display: flex;
+          align-items: center;
+        }
+
+        mat-icon {
+          margin-right: 4px;
+          font-size: 1.5rem;
+          line-height: 1.5rem;
+
+          .material-icons {
+            font-size: 1.5rem;
+            line-height: 1.5rem;
+          }
+        }
+
+        &.editBtn {
+          color: #0076ff;
+
+          &:hover {
+            color: #fff;
+            background-color: #0076ff;
+          }
+        }
+        &.removeBtn {
+          color: red;
+          border-color: red;
+          &:hover {
+            color: #fff;
+            background-color: red;
+          }
+        }
+        &.activeBtn {
+          background-color: #0076ff;
+          color: #fff;
+
+          &:hover {
+            background-color: #fff;
+            color: #0076ff;
+          }
+        }
+      }
+    }
+  }
+  .trainerImg {
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 10;
+    box-shadow: 0 0 10px #ccc;
+    img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 5;
+      &.noImg {
+        z-index: 1;
+      }
+    }
+  }
+  h4 {
+    font-size: 2rem;
+    line-height: 2.8rem;
+    margin: 0;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  p {
+    font-size: 1.6rem;
+    line-height: 2.6rem;
+    margin: 0;
+    margin-bottom: 8px;
+  }
+  ul {
+    padding-left: 20px;
+    margin-bottom: 8px;
+    li {
+      font-size: 1.6rem;
+      line-height: 2.4rem;
+      margin: 0;
+    }
+  }
+}

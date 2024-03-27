@@ -1,0 +1,48 @@
+<section class="section" id="group">
+  <div class="container-fluid">
+    <div class="eventOption">
+      <div class="dateEventSelect"></div>
+      <div>
+        <!-- [routerLink]="['edit']" -->
+        <div class="addEvent" (click)="addNewGroup()">
+          <p>Dodaj nową grupę <mat-icon>add_circle</mat-icon></p>
+        </div>
+        <div class="searchEvent">
+            <!-- <input (keyup)="applyFilter($event.target.value)" [(ngModel)]="searchPerson" placeholder="Szukaj">
+            <mat-icon>search</mat-icon> -->
+        </div>
+        <div class="refreshList" matTooltip="Odśwież listę" matTooltipPosition="left" (click)="ngOnInit()">
+          <span class="material-icons">refresh</span>
+        </div>
+      </div>
+    </div>
+    <div class="listTraining" *ngIf="!groupLoading">
+      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+        <!-- This is the tree node template for leaf nodes -->
+        <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+          <!-- use a disabled button to provide padding for tree leaf -->
+          <button mat-icon-button disabled></button>
+          <div class="matRow">
+            {{node.name}} ({{node.rank}})
+            <a fxFlexFill (click)="editGroup(node.id)" class="mat-row-link"></a>
+          </div>
+        </mat-tree-node>
+        <!-- This is the tree node template for expandable nodes -->
+        <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
+          <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+          </button>
+          <div class="matRow">
+            {{node.name}} ({{node.rank}})
+            <div fxFlexFill (click)="editGroup(node.id)" class="mat-row-link"></div>
+          </div>
+        </mat-tree-node>
+      </mat-tree>
+    </div>
+    <div class="spinner_center" *ngIf="groupLoading">
+      <mat-spinner></mat-spinner>
+    </div>
+  </div>
+</section>

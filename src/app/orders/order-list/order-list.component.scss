@@ -1,0 +1,327 @@
+#orders {
+  .eventOption {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+
+    & > div {
+      display: flex;
+      align-items: center;
+      padding: 0;
+
+      .searchEvent {
+        position: relative;
+
+        input {
+          border-radius: 28px;
+          border: 1px solid #8997ab;
+          font-size: 1.3rem;
+          line-height: 1.7rem;
+          padding: 5px 25px 5px 15px;
+
+          &:focus {
+            outline: -webkit-focus-ring-color auto 0px;
+          }
+        }
+
+        mat-icon {
+          position: absolute;
+          top: 50%;
+          right: 0;
+          transform: translate(-50%, -50%);
+          font-size: 1.8rem;
+          width: 1.8rem;
+          height: 1.8rem;
+          color: #8997ab;
+        }
+      }
+
+      .addEvent {
+        margin-right: 15px;
+
+        p {
+          cursor: pointer;
+          font-size: 1.3rem;
+          line-height: 1.7rem;
+          color: #0076ff;
+          margin: 0;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+
+          mat-icon {
+            margin-left: 5px;
+          }
+        }
+      }
+
+      .refreshList {
+        height: 24px;
+        width: 24px;
+        background-color: #0076ff;
+        border-radius: 24px;
+        color: #fff;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        margin-left: 15px;
+
+        span {
+          font-size: 1.6rem;
+        }
+      }
+    }
+  }
+
+  .nav-tabs {
+    a {
+      background-color: transparent;
+      font-size: 1.5rem;
+      line-height: 1.9rem;
+      color: #8997ab;
+      padding: 5px 10px;
+      font-weight: 600;
+      min-width: 120px;
+      text-align: center;
+      border: 0;
+      border-radius: 0;
+      position: relative;
+
+      &:before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: auto;
+        right: 0;
+        width: 0%;
+        background-color: #8997ab;
+        height: 2px;
+        transition: all 0.3s ease;
+      }
+
+      &.active {
+        color: #374052;
+
+        &:before {
+          width: 100%;
+          right: auto;
+          left: 0;
+        }
+      }
+    }
+  }
+
+  .tab-content {
+    .listTraining {
+      .filterList {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin: 20px 0px;
+
+        .filterType {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          flex-wrap: wrap;
+          margin: 0px -4px;
+
+          .filterBox {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            border: 1px solid #8997ab;
+            border-radius: 4px;
+            margin: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            .count {
+              font-size: 1.3rem;
+              line-height: 1.7rem;
+              padding: 5px 10px;
+              color: #374052;
+              border-right: 1px solid #8997ab;
+              transition: all 0.3s ease;
+            }
+
+            .name {
+              font-size: 1.3rem;
+              line-height: 1.7rem;
+              padding: 5px 10px;
+              color: #374052;
+              transition: all 0.3s ease;
+            }
+
+            &:hover {
+              background-color: #8997ab;
+
+              .count {
+                color: #fff;
+                border-right: 1px solid rgba(#fff, 0.5);
+              }
+
+              .name {
+                color: #fff;
+              }
+            }
+
+            &.isSelected {
+              background-color: #8997ab;
+
+              .count {
+                color: #fff;
+                border-right: 1px solid rgba(#fff, 0.5);
+              }
+
+              .name {
+                color: #fff;
+              }
+            }
+          }
+        }
+
+        .setColumn {
+          p {
+            font-size: 1.3rem;
+            line-height: 1.7rem;
+            margin: 0;
+            color: #8997ab;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: underline;
+          }
+        }
+      }
+
+      mat-table {
+        background: transparent;
+
+        .mat-row {
+          position: relative;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background-color: #f1f5f8;
+          }
+        }
+
+        .mat-row-link {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          left: 40px;
+          top: 0;
+          margin-left: 20px;
+        }
+
+        .mat-header-cell.cdk-header-cell {
+          color: #8997ab;
+          font-weight: 700;
+          font-size: 1.4rem;
+          line-height: 1.8rem;
+        }
+
+        // .mat-row.cdk-row {
+        //   border-bottom-width: 0;
+        // }
+
+        .mat-cell.cdk-cell {
+          color: #374052;
+          font-size: 1.4rem;
+          line-height: 1.8rem;
+        }
+      }
+
+      mat-paginator {
+        background: transparent;
+      }
+    }
+  }
+
+  .mat-column-pozition {
+    max-width: 100px;
+  }
+
+  .addOrder {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    mat-form-field {
+      width: 100%;
+      flex: 1;
+      margin-right: 10px;
+    }
+
+    button {
+      margin: 0 5px;
+    }
+  }
+
+  .mat-cell {
+    padding-right: 10px;
+  }
+
+  .mat-column-select {
+    max-width: 60px;
+  }
+
+  .mat-column-idOrder {
+    max-width: 200px;
+  }
+
+  .mat-column-termOrder {
+    max-width: 140px;
+  }
+
+  .mat-column-term {
+    max-width: 130px;
+  }
+
+  .mat-column-lang {
+    max-width: 60px;
+  }
+
+  .mat-column-status_pay {
+    max-width: 150px;
+  }
+
+  .cdk-column-invoice {
+    max-width: 180px;
+    justify-content: center;
+
+    span {
+      &.italic {
+        font-style: italic;
+      }
+
+      &.isPay {
+        color: green;
+      }
+
+      &.noPay {
+        color: red;
+      }
+    }
+
+    & > div {
+      z-index: 100;
+    }
+  }
+
+  .cdk-column-status_order {
+    max-width: 150px;
+    justify-content: center;
+
+    span {
+      padding: 4px 10px;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 1.4rem;
+      line-height: 1.8rem;
+    }
+  }
+}

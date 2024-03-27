@@ -1,0 +1,10 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{data.header}} {{data.group?.name_pl}}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <button mat-raised-button color="default" (click)="exitDialog()">Zamknij</button>
+  <button mat-raised-button type="submit" color="warn" (click)="removeGroup()">Usuń</button>
+</div>

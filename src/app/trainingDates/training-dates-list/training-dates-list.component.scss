@@ -1,0 +1,482 @@
+:host ::ng-deep .mat-tab-body {
+  padding: 0;
+}
+
+#trainingDates {
+  .eventOption {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+
+    .dateEventSelect {
+      display: flex;
+      align-items: center;
+
+      p {
+        font-size: 1.5rem;
+        line-height: 1.9rem;
+        color: #374052;
+        margin: 0 10px 0 0;
+        font-weight: 400;
+      }
+
+      select {
+        border: 1px solid #8997AB;
+        padding: 5px 10px;
+        border-radius: 4px;
+        color: #8997AB;
+        font-size: 1.3rem;
+        line-height: 1.7rem;
+        max-width: 120px;
+
+        &:focus {
+          outline: -webkit-focus-ring-color auto 0px;
+        }
+      }
+    }
+
+    .dateContent {
+      mat-form-field {
+        max-width: 100px;
+        margin: 0 0 0 15px;
+      }
+    }
+
+    &>div {
+      display: flex;
+      align-items: center;
+      padding: 0;
+
+      .searchEvent {
+        position: relative;
+
+        input {
+          border-radius: 28px;
+          border: 1px solid #8997AB;
+          font-size: 1.3rem;
+          line-height: 1.7rem;
+          padding: 5px 25px 5px 15px;
+
+          &:focus {
+            outline: -webkit-focus-ring-color auto 0px;
+          }
+        }
+
+        mat-icon {
+          position: absolute;
+          top: 50%;
+          right: 0;
+          transform: translate(-50%, -50%);
+          font-size: 1.8rem;
+          width: 1.8rem;
+          height: 1.8rem;
+          color: #8997AB;
+        }
+      }
+
+      .addEvent {
+        margin-right: 15px;
+
+        p {
+          cursor: pointer;
+          font-size: 1.3rem;
+          line-height: 1.7rem;
+          color: #0076FF;
+          margin: 0;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+
+          mat-icon {
+            margin-left: 5px;
+          }
+        }
+      }
+    }
+  }
+
+  .nav-tabs {
+    a {
+      background-color: transparent;
+      font-size: 1.5rem;
+      line-height: 1.9rem;
+      color: #8997AB;
+      padding: 5px 10px;
+      font-weight: 600;
+      min-width: 120px;
+      text-align: center;
+      border: 0;
+      border-radius: 0;
+      position: relative;
+
+      &:before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: auto;
+        right: 0;
+        width: 0%;
+        background-color: #8997AB;
+        height: 2px;
+        transition: all 0.3s ease;
+      }
+
+      &.active {
+        color: #374052;
+
+        &:before {
+          width: 100%;
+          right: auto;
+          left: 0;
+        }
+      }
+    }
+  }
+
+  .tab-content {
+    .filterList {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin: 20px 0px;
+
+      .filterType {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 0px -4px;
+
+        .filterBox {
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          border: 1px solid #8997AB;
+          border-radius: 4px;
+          margin: 4px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          .count {
+            font-size: 1.3rem;
+            line-height: 1.7rem;
+            padding: 5px 10px;
+            color: #374052;
+            border-right: 1px solid #8997AB;
+            transition: all 0.3s ease;
+          }
+
+          .name {
+            font-size: 1.3rem;
+            line-height: 1.7rem;
+            padding: 5px 10px;
+            color: #374052;
+            transition: all 0.3s ease;
+          }
+
+          &:hover {
+            background-color: #8997AB;
+
+            .count {
+              color: #fff;
+              border-right: 1px solid rgba(#fff, .5);
+            }
+
+            .name {
+              color: #fff;
+            }
+          }
+
+          &.isSelected {
+            background-color: #8997AB;
+
+            .count {
+              color: #fff;
+              border-right: 1px solid rgba(#fff, .5);
+            }
+
+            .name {
+              color: #fff;
+            }
+          }
+        }
+      }
+
+      .setColumn {
+        p {
+          font-size: 1.3rem;
+          line-height: 1.7rem;
+          margin: 0;
+          color: #8997AB;
+          font-weight: 500;
+          cursor: pointer;
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .listTraining {
+      mat-table {
+        background: transparent;
+
+        .mat-row {
+          position: relative;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background-color: #F1F5F8;
+
+            .cdk-column-idTermTraining.mat-column-idTermTraining {
+              mat-icon {
+                opacity: 1;
+              }
+            }
+          }
+        }
+
+        .mat-row-link {
+          position: absolute;
+          width: calc(100% - 15px);
+          height: 100%;
+          right: 0;
+          top: 0;
+          // margin-left: 20px;
+        }
+
+        .mat-sort-header.mat-header-cell.cdk-header-cell {
+          color: #8997AB;
+          font-weight: 700;
+          font-size: 1.4rem;
+          line-height: 1.8rem;
+        }
+
+        .mat-row.cdk-row {
+          border-bottom-width: 0;
+        }
+
+        .mat-cell.cdk-cell {
+          color: #374052;
+          font-size: 1.4rem;
+          line-height: 1.8rem;
+
+          &:nth-child(3) {
+            border-left: 1px solid rgba(0, 0, 0, 0.12);
+          }
+        }
+
+        .mat-header-row {}
+
+        .mat-row {}
+      }
+
+      mat-paginator {
+        background: transparent;
+      }
+    }
+  }
+
+
+
+
+  .tableMat {
+    padding: 5rem;
+  }
+
+  mat-table {
+    .mat-header-row.cdk-header-row {
+      .cdk-column-trainingType.mat-column-trainingType {
+        border-left: 0px;
+      }
+    }
+
+    .mat-column-id {
+      padding-left: 10px;
+      max-width: 60px;
+    }
+
+    .mat-row {}
+
+    .cdk-column-training.mat-column-training {
+      position: relative;
+      padding-right: 20px;
+
+      .publicIco {
+        position: absolute;
+        top: 50%;
+        right: 0px;
+        transform: translate(0, -50%);
+        border-radius: 4px;
+        max-width: 23px;
+        z-index: 100;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 1px 5px;
+        transition: all 0.3s ease;
+
+        span {
+          font-size: 1rem;
+          line-height: 1.3rem;
+          color: #374052;
+          margin-right: 5px;
+        }
+
+        mat-icon {
+          color: #8997AB;
+          width: 15px;
+          height: 15px;
+          font-size: 15px;
+
+          span {
+            color: #D6DCE4;
+          }
+        }
+
+        &:hover {
+          background-color: #D6DCE4;
+          max-width: 200px;
+        }
+      }
+    }
+
+    .mat-column-idTermTraining {
+      max-width: 180px;
+      padding-left: 20px;
+      position: relative;
+
+      mat-icon {
+        top: 50%;
+        left: 5px;
+        transform: translate(-10%, -70%);
+        width: 9px;
+        height: 9px;
+        font-size: 9px;
+        position: absolute;
+        color: #8997AB;
+        opacity: 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+    }
+
+    .mat-column-idTraining {
+      max-width: 120px;
+      padding-left: 15px;
+    }
+
+    .mat-column-place {
+      max-width: 140px;
+      justify-content: center;
+      text-align: center;
+
+      span.isRemote {
+        display: flex;
+        align-items: center;
+        background-color: #D6DCE4;
+        border-radius: 4px;
+        padding: 4px 10px;
+
+        mat-icon {
+          width: 10px;
+          height: 14px;
+          font-size: 13px;
+          color: #374052;
+          margin-right: 10px;
+        }
+      }
+    }
+
+    .mat-column-lang {
+      justify-content: center;
+      text-align: center;
+    }
+
+    .mat-column-trainingType {
+      max-width: 160px;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .mat-column-participants {
+      max-width: 120px;
+      justify-content: center;
+      text-align: center;
+
+      span {
+        z-index: 100;
+      }
+    }
+
+    .mat-column-status {
+      max-width: 150px;
+      justify-content: center;
+      text-align: center;
+
+      span {
+        padding: 4px 10px;
+        border-radius: 4px;
+        color: #fff;
+      }
+    }
+
+    .mat-column-lang {
+      max-width: 60px;
+    }
+
+    .mat-column-dateStartEnd {
+      max-width: 150px;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .mat-column-action {
+      padding-right: 10px;
+      justify-content: flex-end;
+      max-width: 130px;
+
+      button,
+      a {
+        min-width: 35px;
+        margin: 0 3px;
+        padding: 0;
+      }
+    }
+  }
+
+  .IcoDon {
+    color: green;
+  }
+
+  .IcoError {
+    color: red;
+  }
+
+  .mat-column-pozition {
+    max-width: 100px;
+  }
+
+  .mat-column-public {
+    max-width: 150px;
+  }
+
+  .mat-column-code {
+    max-width: 150px;
+  }
+
+  .add_trainingDates {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    mat-form-field {
+      width: 100%;
+      flex: 1;
+      margin-right: 10px;
+    }
+
+    button {
+      margin: 0 5px;
+    }
+  }
+}

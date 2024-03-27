@@ -1,0 +1,183 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{ data.header }}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__content addTicket" mat-dialog-content>
+  <p *ngIf="data.ticket">
+    Zmiany nie będą miały wpływu na utworzone wcześniej wydarzenia. <br />
+    Aby edytować pakiety w istniejących wydarzeniach, należy przejść do edycji
+    wybranego wydarzenia.
+  </p>
+  <form
+    [formGroup]="formOptionsTicket"
+    (ngSubmit)="addDefaultTicketTraining()"
+    #formDirective2="ngForm"
+  >
+    <div class="row">
+      <div class="col-12 col-sm-12 col-md-6">
+        <mat-form-field>
+          <input
+            matInput
+            type="text"
+            name="nazwa miejsca pl"
+            formControlName="name_pl"
+            placeholder="Nazwa PL"
+          />
+          <mat-error
+            *ngIf="formOptionsTicket.controls['name_pl'].errors?.required"
+          >
+            Pole wymagane</mat-error
+          >
+        </mat-form-field>
+        <!-- <mat-form-field>
+          <mat-label>Dni ważności biletu:</mat-label>
+          <input matInput type="number" formControlName="valid_until" />
+          <mat-error
+            *ngIf="formOptionsTicket.controls['valid_until'].errors?.required"
+          >
+            Pole wymagane</mat-error
+          >
+        </mat-form-field> -->
+        <ng-container *ngFor="let currency of currencyList">
+          <mat-form-field>
+            <input
+              matInput
+              type="number"
+              [formControlName]="'price_' + currency.name"
+              [placeholder]="'Cena za miejsce w ' + currency.name"
+            />
+            <mat-error
+              *ngIf="
+                formOptionsTicket.controls['price_' + currency.name].errors
+                  ?.required
+              "
+            >
+              Pole wymagane</mat-error
+            >
+          </mat-form-field>
+        </ng-container>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6">
+        <mat-form-field>
+          <input
+            matInput
+            type="text"
+            name="nazwa biletu en"
+            formControlName="name_en"
+            placeholder="Nazwa EN"
+          />
+          <mat-error
+            *ngIf="formOptionsTicket.controls['name_en'].errors?.required"
+          >
+            Pole wymagane</mat-error
+          >
+        </mat-form-field>
+        <!-- <mat-form-field>
+          <mat-label
+            >Ile dni bilet ma być aktywny, licząc od dnia dodania
+            wydarzenia</mat-label
+          >
+          <input matInput type="number" formControlName="valid_from" />
+          <mat-error
+            *ngIf="formOptionsTicket.controls['valid_from'].errors?.required"
+          >
+            Pole wymagane</mat-error
+          >
+        </mat-form-field> -->
+        <mat-form-field>
+          <input
+            matInput
+            name="limit"
+            type="number"
+            formControlName="useLimit"
+            placeholder="Limit użyć"
+          />
+          <mat-error
+            *ngIf="formOptionsTicket.controls['useLimit'].errors?.required"
+          >
+            Pole wymagane</mat-error
+          >
+        </mat-form-field>
+      </div>
+      <div class="col-12">
+        <mat-form-field>
+          <mat-select
+            formControlName="rabat"
+            placeholder="Czy miejsca rabatowane?"
+          >
+            <mat-option [value]="0">
+              Kody rabatowe nie działają na ten typ miejsca
+            </mat-option>
+            <mat-option [value]="1">
+              Możliwość użycia kodu rabatowego
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-sm-12">
+        <mat-checkbox color="primary" formControlName="payNow"
+          >Płatność przy rejestracji</mat-checkbox
+        >
+        <mat-checkbox color="primary" formControlName="isPublic"
+          >Bilet dostępny w formularzu</mat-checkbox
+        >
+        <h3><strong>Atrbuty miejsca</strong></h3>
+        <mat-checkbox
+          color="primary"
+          *ngFor="let tickAttr of ticketAttr"
+          formControlName="attr_{{ tickAttr.id }}"
+          ><span [innerHTML]="tickAttr.name_pl"></span>
+        </mat-checkbox>
+      </div>
+      <div class="spinner_center" *ngIf="isTicketLoading">
+        <mat-spinner></mat-spinner>
+      </div>
+    </div>
+    <div class="editLast" *ngIf="ticketData">
+      <p *ngIf="ticketData.userEdit">
+        Edytowane przez: {{ ticketData.userEdit?.first_name }}
+        {{ ticketData.userEdit?.last_name }}
+        {{ ticketData.updated_at | date: "dd-MM-yyyy HH:mm" }}
+      </p>
+      <p *ngIf="ticketData.userCreate">
+        Dodane przez: {{ ticketData.userCreate?.first_name }}
+        {{ ticketData.userCreate?.last_name }}
+        {{ ticketData.created_at | date: "dd-MM-yyyy HH:mm" }}
+      </p>
+    </div>
+  </form>
+</div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <button
+    mat-raised-button
+    type="button"
+    *ngIf="ticketData && !data.copy"
+    (click)="removeDefaultTicket()"
+    color="warn"
+  >
+    Usuń
+  </button>
+  <button mat-raised-button color="default" (click)="exitDialog()">
+    Zamknij
+  </button>
+  <button
+    mat-raised-button
+    type="submit"
+    *ngIf="!ticketData || data.copy"
+    (click)="formDirective2.ngSubmit.emit()"
+    color="primary"
+  >
+    Dodaj
+  </button>
+  <button
+    mat-raised-button
+    type="submit"
+    *ngIf="ticketData && !data.copy"
+    (click)="editDefaultTicketTraining()"
+    color="primary"
+  >
+    Zapisz
+  </button>
+</div>

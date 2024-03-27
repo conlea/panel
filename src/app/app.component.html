@@ -1,0 +1,112 @@
+<mat-drawer-container class="navPanel" autosize>
+  <mat-drawer
+    #drawersConlea
+    class="page_sidenav"
+    (openedStart)="openNavConlea()"
+    mode="side"
+    *ngIf="isUser"
+  >
+    <div class="navContent" [ngClass]="linkText ? 'isOpen' : 'isClose'">
+      <div class="headNav">
+        <div class="navTitle">
+          <h2 [ngClass]="linkText ? 'show' : 'hide'">Panel</h2>
+          <button
+            class="hamburger hamburger--arrow conlea"
+            type="button"
+            (click)="showMoreNav()"
+            [ngClass]="sideNavState ? 'is-active' : ''"
+          >
+            <span class="hamburger-box">
+              <span class="hamburger-inner"></span>
+            </span>
+          </button>
+        </div>
+        <nav>
+          <a routerLink="/contacts" routerLinkActive="active">
+            <mat-icon>people</mat-icon>
+            <span [ngClass]="linkText ? 'show' : 'hide'">Kontakty</span>
+          </a>
+          <a routerLink="/trainings" routerLinkActive="active">
+            <mat-icon>event_note</mat-icon>
+            <span [ngClass]="linkText ? 'show' : 'hide'">Produkty</span>
+          </a>
+          <a routerLink="/training-dates" routerLinkActive="active">
+            <mat-icon>today</mat-icon>
+            <span [ngClass]="linkText ? 'show' : 'hide'">Wydarzenia</span>
+          </a>
+          <a routerLink="/orders" routerLinkActive="active">
+            <mat-icon>euro</mat-icon>
+            <span [ngClass]="linkText ? 'show' : 'hide'">Zamówienia</span>
+          </a>
+          <a routerLink="/trainers" routerLinkActive="active">
+            <fa-icon [icon]="userNinja"></fa-icon>
+            <span [ngClass]="linkText ? 'show' : 'hide'">Trenerzy</span>
+          </a>
+          <a routerLink="/discount-code" routerLinkActive="active">
+            <fa-icon [icon]="percentage"></fa-icon>
+            <span [ngClass]="linkText ? 'show' : 'hide'">Kody rabatowe</span>
+          </a>
+          <a routerLink="/methods" routerLinkActive="active">
+            <mat-icon>people_outline</mat-icon>
+            <span [ngClass]="linkText ? 'show' : 'hide'">Metody szkoleń</span>
+          </a>
+          <a routerLink="/places" routerLinkActive="active">
+            <mat-icon>location_on</mat-icon>
+            <span [ngClass]="linkText ? 'show' : 'hide'">Lokalizacja</span>
+          </a>
+          <a routerLink="/groups" routerLinkActive="active">
+            <mat-icon>dynamic_feed</mat-icon>
+            <span [ngClass]="linkText ? 'show' : 'hide'">Grupy szkoleń</span>
+          </a>
+          <!-- <a routerLink="/companies" routerLinkActive="active">
+            <mat-icon>work</mat-icon> Opinie
+          </a> -->
+          <a routerLink="/settings" routerLinkActive="active">
+            <mat-icon>settings_applications</mat-icon>
+            <span [ngClass]="linkText ? 'show' : 'hide'">Ustawienia</span>
+          </a>
+        </nav>
+      </div>
+      <div class="blockSettings">
+        <div class="profile" (click)="editProfile()">
+          <div class="profile__img">
+            <img src="./../assets/img/userAvatar.png" alt="user" />
+          </div>
+          <div class="profile__content" [ngClass]="linkText ? 'show' : 'hide'">
+            <p>{{ userData?.first_name }} {{ userData?.last_name }}</p>
+          </div>
+        </div>
+        <nav>
+          <a routerLink="/login" (click)="logout()">
+            <mat-icon>power_settings_new</mat-icon>
+            <span [ngClass]="linkText ? 'show' : 'hide'">Wyloguj się</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+    <!-- <div class="logotyp">
+      <h2>Panel</h2>
+      <img src="https://f.hubspotusercontent40.net/hubfs/6542241/Conlea%20Blog/conlea.svg">
+    </div> -->
+  </mat-drawer>
+  <mat-drawer-content>
+    <main id="page_main">
+      <header>
+        <div class="hamburgerBtnContent" *ngIf="user"></div>
+      </header>
+      <div id="pageWrapper" [ngClass]="isLmitB ? 'isLmit' : ''">
+        <router-outlet></router-outlet>
+      </div>
+      <footer>
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <p>Conlea© | Letsmanageit©</p>
+              <p>{{ yearNow }}</p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </main>
+  </mat-drawer-content>
+</mat-drawer-container>

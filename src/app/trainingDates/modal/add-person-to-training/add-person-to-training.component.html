@@ -1,0 +1,30 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{data.header}}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__content" mat-dialog-content>
+  <form [formGroup]="formOptions" (ngSubmit)="addPerson()" #formDirective="ngForm">
+    <mat-form-field class="example-full-width">
+      <input type="text" placeholder="Znajdź osobę" aria-label="Number" (input)="onSearchChange($event.target.value)"
+        matInput formControlName="getPerson" [matAutocomplete]="auto">
+      <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+        <mat-option *ngFor="let option of filteredOptions; let i = index"
+          value="{{option.properties.firstname?.value}} {{option.properties.lastname?.value}}"
+          (onSelectionChange)="onEnter(option['vid'])">
+          {{option.properties.firstname?.value}} {{option.properties.lastname?.value}} (email:
+          {{option.properties.email?.value}})
+        </mat-option>
+      </mat-autocomplete>
+      <mat-error *ngIf="formOptions.controls['getPerson'].errors?.required">
+        Pole wymagane</mat-error>
+      <mat-error *ngIf="formOptions.controls['getPerson'].errors?.minlength">
+        Minimum 4 znaki</mat-error>
+    </mat-form-field>
+  </form>
+</div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <button mat-raised-button color="default" (click)="exitDialog()">Zamknij</button>
+  <button mat-raised-button type="submit" (click)="formDirective.ngSubmit.emit()" color="primary">Dodaj</button>
+</div>

@@ -1,0 +1,218 @@
+<section class="section" id="codeDiscount">
+  <div class="container-fluid">
+    <div class="eventOption">
+      <div class="dateEventSelect"></div>
+      <div>
+        <!-- [routerLink]="['details']" -->
+        <div class="addEvent" (click)="addNewDiscountCode()" >
+          <p>Dodaj kod rabatowy <mat-icon>add_circle</mat-icon></p>
+        </div>
+        <div class="searchEvent">
+            <input (keyup)="applyFilter($event.target.value)" [(ngModel)]="searchCode" placeholder="Wyszukaj kod rabatowy">
+            <mat-icon>search</mat-icon>
+        </div>
+        <div class="refreshList" matTooltip="Odśwież listę" matTooltipPosition="left" (click)="ngOnInit()">
+          <span class="material-icons">refresh</span>
+        </div>
+      </div>
+    </div>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <a class="nav-link active"  id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false" (click)="onTabChanged(0)">Bieżące</a>
+      <a class="nav-link"  id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false" (click)="onTabChanged(1)">Archiwalne</a>
+      <a class="nav-link"  id="allEvent-tab" data-toggle="tab" href="#allEvent" role="tab" aria-controls="allEvent" aria-selected="true" (click)="onTabChanged(2)">Wszystkie</a>
+    </div>
+    <div class="tab-content" id="nav-tabContent">
+    <!-- bieżące -->
+      <div class="tab-pane fade show active" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+        <div class="listTraining" *ngIf="!activeDiscountLoading">
+          <ng-container *ngIf="activeDiscountList.length == 0; else noActiveDiscountList">
+            <h4 class="noDataSource">Brak aktywnych kodów rabatowych</h4>
+          </ng-container>
+          <ng-template #noActiveDiscountList>
+            <div class="filterList">
+              <div class="filterType">
+              </div>
+              <div class="setColumn" (click)="setColumns()">
+                <p>Dostosuj kolumny</p>
+              </div>
+            </div>
+            <mat-table [dataSource]="activeDiscountDataSource">
+              <!-- code Column -->
+              <ng-container matColumnDef="codeName">
+                <mat-header-cell *matHeaderCellDef > Kod rabatowy </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                  <!-- [routerLink]="[element.id, 'details']" -->
+                  <a fxFlexFill (click)="editDiscount(element)" class="mat-row-link"></a>
+                  {{element.code_name}}
+                </mat-cell>
+              </ng-container>
+              <!-- code start Column -->
+              <ng-container matColumnDef="codeStart">
+                <mat-header-cell *matHeaderCellDef> Data ważności </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.date_start | date: 'dd/MM'}} -
+                  {{element.date_end | date: 'dd/MM/yyyy'}} </mat-cell>
+              </ng-container>
+              <!-- code type Column -->
+              <ng-container matColumnDef="codetype">
+                <mat-header-cell *matHeaderCellDef> Typ </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                  <ng-container *ngIf="element.type == 'amount'; else precent">Całkowity</ng-container>
+                  <ng-template #precent>Procentowy</ng-template>
+                </mat-cell>
+              </ng-container>
+              <!-- code start Column -->
+              <ng-container matColumnDef="codevalue">
+                <mat-header-cell *matHeaderCellDef> Wartość </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.code_value}} </mat-cell>
+              </ng-container>
+              <!-- code useLeft Column -->
+              <ng-container matColumnDef="useLimit">
+                <mat-header-cell *matHeaderCellDef> Limit użyć </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.useLimit}} </mat-cell>
+              </ng-container>
+              <!-- code useLeft Column -->
+              <ng-container matColumnDef="isUse">
+                <mat-header-cell *matHeaderCellDef> Użyto </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.isUse}} </mat-cell>
+              </ng-container>
+              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            </mat-table>
+            <mat-paginator #paginatorActiveDiscount [pageSizeOptions]="[10, 25, 100]">
+            </mat-paginator>
+          </ng-template>
+        </div>
+        <div class="spinner_center" *ngIf="activeDiscountLoading">
+          <mat-spinner></mat-spinner>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+        <div class="listTraining" *ngIf="!archiveDiscountLoading">
+          <ng-container *ngIf="archiveDiscountList.length == 0; else noArchiveDiscountList">
+            <h4 class="noDataSource">Brak archiwalnych kodów rabatowych</h4>
+          </ng-container>
+          <ng-template #noArchiveDiscountList>
+            <div class="filterList">
+              <div class="filterType">
+              </div>
+              <div class="setColumn" (click)="setColumns()">
+                <p>Dostosuj kolumny</p>
+              </div>
+            </div>
+            <mat-table [dataSource]="archiveDiscountDataSource">
+              <!-- code Column -->
+              <ng-container matColumnDef="codeName">
+                <mat-header-cell *matHeaderCellDef > Kod rabatowy </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                  <!-- [routerLink]="[element.id, 'details']" -->
+                  <a fxFlexFill (click)="editDiscount(element)" class="mat-row-link"></a>
+                  {{element.code_name}}
+                </mat-cell>
+              </ng-container>
+              <!-- code start Column -->
+              <ng-container matColumnDef="codeStart">
+                <mat-header-cell *matHeaderCellDef> Data ważności </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.date_start | date: 'dd/MM'}} -
+                  {{element.date_end | date: 'dd/MM/yyyy'}} </mat-cell>
+              </ng-container>
+              <!-- code type Column -->
+              <ng-container matColumnDef="codetype">
+                <mat-header-cell *matHeaderCellDef> Typ </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                  <ng-container *ngIf="element.type == 'amount'; else precent">Całkowity</ng-container>
+                  <ng-template #precent>Procentowy</ng-template>
+                </mat-cell>
+              </ng-container>
+              <!-- code start Column -->
+              <ng-container matColumnDef="codevalue">
+                <mat-header-cell *matHeaderCellDef> Wartość </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.code_value}} </mat-cell>
+              </ng-container>
+              <!-- code useLeft Column -->
+              <ng-container matColumnDef="useLimit">
+                <mat-header-cell *matHeaderCellDef> Limit użyć </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.useLimit}} </mat-cell>
+              </ng-container>
+              <!-- code useLeft Column -->
+              <ng-container matColumnDef="isUse">
+                <mat-header-cell *matHeaderCellDef> Użyto </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.isUse}} </mat-cell>
+              </ng-container>
+              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            </mat-table>
+            <mat-paginator #paginatorArchiveDiscount [pageSizeOptions]="[10, 25, 100]">
+            </mat-paginator>
+          </ng-template>
+        </div>
+        <div class="spinner_center" *ngIf="archiveDiscountLoading">
+          <mat-spinner></mat-spinner>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="allEvent" role="tabpanel" aria-labelledby="allEvent-tab">
+        <div class="listTraining" *ngIf="!allDiscountLoading">
+          <ng-container *ngIf="allDiscountList.length == 0; else noAllDiscountList">
+            <h4 class="noDataSource">Brak kodów rabatowych</h4>
+          </ng-container>
+          <ng-template #noAllDiscountList>
+            <div class="filterList">
+              <div class="filterType">
+              </div>
+              <div class="setColumn" (click)="setColumns()">
+                <p>Dostosuj kolumny</p>
+              </div>
+            </div>
+            <mat-table [dataSource]="allDiscountDataSource">
+              <!-- code Column -->
+              <ng-container matColumnDef="codeName">
+                <mat-header-cell *matHeaderCellDef > Kod rabatowy </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                  <!-- [routerLink]="[element.id, 'details']" -->
+                  <a fxFlexFill (click)="editDiscount(element)" class="mat-row-link"></a>
+                  {{element.code_name}}
+                </mat-cell>
+              </ng-container>
+              <!-- code start Column -->
+              <ng-container matColumnDef="codeStart">
+                <mat-header-cell *matHeaderCellDef> Data ważności </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.date_start | date: 'dd/MM'}} -
+                  {{element.date_end | date: 'dd/MM/yyyy'}} </mat-cell>
+              </ng-container>
+              <!-- code type Column -->
+              <ng-container matColumnDef="codetype">
+                <mat-header-cell *matHeaderCellDef> Typ </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                  <ng-container *ngIf="element.type == 'amount'; else precent">Całkowity</ng-container>
+                  <ng-template #precent>Procentowy</ng-template>
+                </mat-cell>
+              </ng-container>
+              <!-- code start Column -->
+              <ng-container matColumnDef="codevalue">
+                <mat-header-cell *matHeaderCellDef> Wartość </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.code_value}} </mat-cell>
+              </ng-container>
+              <!-- code useLeft Column -->
+              <ng-container matColumnDef="useLimit">
+                <mat-header-cell *matHeaderCellDef> Limit użyć </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.useLimit}} </mat-cell>
+              </ng-container>
+              <!-- code useLeft Column -->
+              <ng-container matColumnDef="isUse">
+                <mat-header-cell *matHeaderCellDef> Użyto </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.isUse}} </mat-cell>
+              </ng-container>
+              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            </mat-table>
+            <mat-paginator #paginatorAllDiscount [pageSizeOptions]="[10, 25, 100]">
+            </mat-paginator>
+          </ng-template>
+        </div>
+        <div class="spinner_center" *ngIf="allDiscountLoading">
+          <mat-spinner></mat-spinner>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

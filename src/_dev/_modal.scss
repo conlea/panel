@@ -1,0 +1,48 @@
+.mat-dialog-container {
+  position: relative;
+
+  .modal {
+    &__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+
+      h1 {
+        font-size: 1.8rem;
+        margin: 0;
+        font-weight: 700;
+        color: #313A4B;
+      }
+
+      &>span {
+        font-weight: 900;
+        font-size: 2.5rem;
+        line-height: 2.5rem;
+        cursor: pointer;
+      }
+    }
+
+    &__content {
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+
+      mat-form-field {
+        width: 100%;
+        font-size: 1.6rem;
+      }
+    }
+
+    &__footer {
+      justify-content: flex-end;
+
+      .mat_buttons {
+        justify-content: center;
+
+        button[color=primary] {
+          color: #fff;
+        }
+      }
+    }
+  }
+
+}

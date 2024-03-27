@@ -1,0 +1,25 @@
+#methodDetails {
+  .editmethod {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+
+    &>div {
+      margin: 0 5px;
+
+      button {
+        margin: 0 5px;
+      }
+    }
+  }
+
+  .editLast {
+    p {
+      margin: 0;
+      font-size: 1rem;
+      font-style: italic;
+      color: #ccc;
+    }
+  }
+}

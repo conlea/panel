@@ -1,0 +1,520 @@
+<section class="section" id="orders">
+  <div class="container-fluid">
+    <div class="eventOption">
+      <div class="dateEventSelect"></div>
+      <div>
+        <!-- [routerLink]="['edit']" -->
+        <div class="addEvent" [routerLink]="['details']">
+          <p>Dodaj zamówienie <mat-icon>add_circle</mat-icon></p>
+        </div>
+        <div class="searchEvent">
+          <input
+            (keyup)="applyFilter($event.target.value)"
+            [(ngModel)]="searchOrder"
+            placeholder="Szukaj"
+          />
+          <mat-icon>search</mat-icon>
+        </div>
+        <div
+          class="refreshList"
+          matTooltip="Odśwież listę"
+          matTooltipPosition="left"
+          (click)="ngOnInit()"
+        >
+          <span class="material-icons">refresh</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <a
+        class="nav-link"
+        [ngClass]="{ active: activeTab === 'eventNow' }"
+        id="nav-profile-tab"
+        data-toggle="tab"
+        href="#nav-profile"
+        role="tab"
+        aria-controls="nav-profile"
+        aria-selected="false"
+        (click)="onTabChanged(0)"
+        >Bieżące</a
+      >
+      <a
+        class="nav-link"
+        [ngClass]="{ active: activeTab === 'eventOld' }"
+        id="nav-contact-tab"
+        data-toggle="tab"
+        href="#nav-contact"
+        role="tab"
+        aria-controls="nav-contact"
+        aria-selected="false"
+        (click)="onTabChanged(1)"
+        >Archiwalne</a
+      >
+      <a
+        class="nav-link"
+        [ngClass]="{ active: activeTab === 'eventAll' }"
+        id="allEvent-tab"
+        data-toggle="tab"
+        href="#allEvent"
+        role="tab"
+        aria-controls="allEvent"
+        aria-selected="true"
+        (click)="onTabChanged(2)"
+        >Wszystkie</a
+      >
+    </div>
+
+    <div class="tab-content" id="nav-tabContent">
+      <!-- bieżące -->
+      <div
+        class="tab-pane fade"
+        [ngClass]="{ 'show active': activeTab === 'eventNow' }"
+        id="nav-profile"
+        role="tabpanel"
+        aria-labelledby="nav-profile-tab"
+      >
+        <div class="listTraining">
+          <div class="filterList">
+            <div class="filterType">
+              <div
+                class="filterBox"
+                *ngFor="let filterType of registerType"
+                (click)="filterTypeTraining(filterType.name)"
+                [ngClass]="{
+                  isSelected: filtredArray.includes(filterType.name)
+                }"
+              >
+                <div class="count">
+                  {{ filterType.count }}
+                </div>
+                <div class="name">
+                  {{ filterType.name }}
+                </div>
+              </div>
+            </div>
+            <div class="setColumn" (click)="setColumns()">
+              <p>Dostosuj kolumny</p>
+            </div>
+          </div>
+          <ng-container *ngIf="selection.selected.length">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="archiveSelectedOrder()"
+            >
+              Dodaj do archiwum
+            </button>
+            <button
+              mat-raised-button
+              color="warn"
+              (click)="removeSelectedOrder()"
+              style="margin-left: 20px"
+            >
+              <mat-icon>delete</mat-icon> Usuń
+            </button>
+          </ng-container>
+          <mat-table [dataSource]="activOrderList">
+            <ng-container matColumnDef="select">
+              <mat-header-cell *matHeaderCellDef>
+                <!-- <mat-checkbox
+                  (change)="$event ? masterToggle() : null"
+                  [checked]="selection.hasValue() && isAllSelected()"
+                  [indeterminate]="selection.hasValue() && !isAllSelected()"
+                ></mat-checkbox> -->
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-checkbox
+                  (click)="$event.stopPropagation()"
+                  (change)="$event ? isSelectedEvent(element) : null"
+                ></mat-checkbox>
+              </mat-cell>
+            </ng-container>
+            <!-- ID Column -->
+            <ng-container matColumnDef="idOrder">
+              <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.orderId }}
+                <a
+                  fxFlexFill
+                  [routerLink]="[element.id, 'details']"
+                  class="mat-row-link"
+                ></a>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="termOrder">
+              <mat-header-cell *matHeaderCellDef>
+                Data zgłoszenia
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.created_at }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="training">
+              <mat-header-cell *matHeaderCellDef> Wydarzenie </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.training }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="reporting">
+              <mat-header-cell *matHeaderCellDef>
+                Os. zgłaszająca
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.firstName }} {{ element.lastName }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="company">
+              <mat-header-cell *matHeaderCellDef> Firma </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.company }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="term">
+              <mat-header-cell *matHeaderCellDef>
+                Data wydarzenia
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.trainingDateStart | date : "dd-MM" }}-{{
+                  element.trainingDateEnd | date : "dd/MM/yyyy"
+                }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="lang">
+              <mat-header-cell *matHeaderCellDef> Język </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.lang }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="invoice">
+              <mat-header-cell *matHeaderCellDef> Faktura </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <ng-container *ngIf="element.invoiceNumber">
+                  <span
+                    [class.italic]="element.invoiceKind == 'proforma'"
+                    [class.isPay]="element.invoiceAlertIsPay"
+                    [class.noPay]="element.invoiceAlertNoPay"
+                    >{{ element.invoiceNumber }}</span
+                  >
+                </ng-container>
+                <ng-template #noInvoice> Brak Faktury </ng-template>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="status_order">
+              <mat-header-cell *matHeaderCellDef>
+                Status zgłoszenia
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span
+                  [style.background-color]="'#' + element.status_color.hex"
+                  [style.border-color]="'#' + element.status_color.hex"
+                  >{{ element.status_order }}</span
+                >
+              </mat-cell>
+            </ng-container>
+            <mat-header-row
+              *matHeaderRowDef="displayedColumns"
+            ></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+          </mat-table>
+          <mat-paginator
+            #paginatorOrderListActive
+            [pageSizeOptions]="[25, 50, 100]"
+          >
+          </mat-paginator>
+        </div>
+      </div>
+      <!-- archiwum -->
+      <div
+        class="tab-pane fade"
+        [ngClass]="{ 'show active': activeTab === 'eventOld' }"
+        id="nav-contact"
+        role="tabpanel"
+        aria-labelledby="nav-contact-tab"
+      >
+        <div class="listTraining" *ngIf="!orderArchiwLoading">
+          <div class="filterList">
+            <div class="filterType">
+              <div
+                class="filterBox"
+                *ngFor="let filterType of registerType"
+                (click)="filterTypeTraining(filterType.name)"
+                [ngClass]="{
+                  isSelected: filtredArray.includes(filterType.name)
+                }"
+              >
+                <div class="count">
+                  {{ filterType.count }}
+                </div>
+                <div class="name">
+                  {{ filterType.name }}
+                </div>
+              </div>
+            </div>
+            <div class="setColumn" (click)="setColumns()">
+              <p>Dostosuj kolumny</p>
+            </div>
+          </div>
+          <mat-table [dataSource]="archiwOrderList">
+            <!-- ID Column -->
+            <ng-container matColumnDef="idOrder">
+              <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.orderId }}
+                <a
+                  fxFlexFill
+                  [routerLink]="[element.id, 'details']"
+                  class="mat-row-link"
+                ></a>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="termOrder">
+              <mat-header-cell *matHeaderCellDef>
+                Data zgłoszenia
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.created_at }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="training">
+              <mat-header-cell *matHeaderCellDef> Wydarzenie </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.training }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="reporting">
+              <mat-header-cell *matHeaderCellDef>
+                Os. zgłaszająca
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.firstName }} {{ element.lastName }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="company">
+              <mat-header-cell *matHeaderCellDef> Firma </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.company }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="term">
+              <mat-header-cell *matHeaderCellDef>
+                Data wydarzenia
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.trainingDateStart | date : "dd-MM" }}-{{
+                  element.trainingDateEnd | date : "dd/MM/yyyy"
+                }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="lang">
+              <mat-header-cell *matHeaderCellDef> Język </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.lang }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="invoice">
+              <mat-header-cell *matHeaderCellDef> Faktury </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <ng-container *ngIf="element.invoiceNumber">
+                  <span
+                    [class.italic]="element.invoiceKind == 'proforma'"
+                    [class.isPay]="element.invoiceAlertIsPay"
+                    [class.noPay]="element.invoiceAlertNoPay"
+                    >{{ element.invoiceNumber }}</span
+                  >
+                </ng-container>
+                <ng-template #noInvoice> Brak Faktury </ng-template>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="status_order">
+              <mat-header-cell *matHeaderCellDef>
+                Status zgłoszenia
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span
+                  [style.background-color]="'#' + element.status_color.hex"
+                  [style.border-color]="'#' + element.status_color.hex"
+                  >{{ element.status_order }}</span
+                >
+              </mat-cell>
+            </ng-container>
+            <mat-header-row
+              *matHeaderRowDef="displayedColumns"
+            ></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+          </mat-table>
+          <mat-paginator
+            #paginatorOrderListArchiw
+            [pageSizeOptions]="[25, 50, 100]"
+          >
+          </mat-paginator>
+        </div>
+        <div class="spinner_center" *ngIf="orderArchiwLoading">
+          <mat-spinner></mat-spinner>
+        </div>
+      </div>
+      <!-- wszystkie -->
+      <div
+        class="tab-pane fade"
+        [ngClass]="{ 'show active': activeTab === 'eventAll' }"
+        id="allEvent"
+        role="tabpanel"
+        aria-labelledby="allEvent-tab"
+      >
+        <div class="listTraining" *ngIf="!orderAllLoading">
+          <div class="filterList">
+            <div class="filterType">
+              <div
+                class="filterBox"
+                *ngFor="let filterType of registerType"
+                (click)="filterTypeTraining(filterType.name)"
+                [ngClass]="{
+                  isSelected: filtredArray.includes(filterType.name)
+                }"
+              >
+                <div class="count">
+                  {{ filterType.count }}
+                </div>
+                <div class="name">
+                  {{ filterType.name }}
+                </div>
+              </div>
+            </div>
+            <div class="setColumn" (click)="setColumns()">
+              <p>Dostosuj kolumny</p>
+            </div>
+          </div>
+          <mat-table
+            [dataSource]="allOrderList"
+            #matSortActive="matSort"
+            matSort
+          >
+            <!-- ID Column -->
+            <ng-container matColumnDef="idOrder">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                ID
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.orderId }}
+                <a
+                  fxFlexFill
+                  [routerLink]="[element.id, 'details']"
+                  class="mat-row-link"
+                ></a>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="termOrder">
+              <mat-header-cell *matHeaderCellDef>
+                Data zgłoszenia
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.created_at }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="training">
+              <mat-header-cell *matHeaderCellDef> Wydarzenie </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.training }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="reporting">
+              <mat-header-cell *matHeaderCellDef>
+                Os. zgłaszająca
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.firstName }} {{ element.lastName }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="company">
+              <mat-header-cell *matHeaderCellDef> Firma </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.company }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="term">
+              <mat-header-cell *matHeaderCellDef>
+                Data wydarzenia
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.trainingDateStart | date : "dd-MM" }}-{{
+                  element.trainingDateEnd | date : "dd/MM/yyyy"
+                }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="lang">
+              <mat-header-cell *matHeaderCellDef> Język </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.lang }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="invoice">
+              <mat-header-cell *matHeaderCellDef> Faktura </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <ng-container *ngIf="element.invoiceNumber">
+                  <span
+                    [class.italic]="element.invoiceKind == 'proforma'"
+                    [class.isPay]="element.invoiceAlertIsPay"
+                    [class.noPay]="element.invoiceAlertNoPay"
+                    >{{ element.invoiceNumber }}</span
+                  >
+                </ng-container>
+                <ng-template #noInvoice> Brak Faktury </ng-template>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="status_order">
+              <mat-header-cell *matHeaderCellDef>
+                Status zgłoszenia
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span
+                  [style.background-color]="'#' + element.status_color.hex"
+                  [style.border-color]="'#' + element.status_color.hex"
+                  >{{ element.status_order }}</span
+                >
+              </mat-cell>
+            </ng-container>
+            <mat-header-row
+              *matHeaderRowDef="displayedColumns"
+            ></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+          </mat-table>
+          <mat-paginator
+            #paginatorOrderListAll
+            [pageSizeOptions]="[25, 50, 100]"
+          ></mat-paginator>
+        </div>
+        <div class="spinner_center" *ngIf="orderAllLoading">
+          <mat-spinner></mat-spinner>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="spinner_center fixed" *ngIf="editSpinner">
+    <mat-spinner></mat-spinner>
+  </div>
+</section>

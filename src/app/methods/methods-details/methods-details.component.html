@@ -1,0 +1,82 @@
+<section class="section" id="methodDetails">
+  <div class="container">
+    <h2 *ngIf="idMethod > 0">Edytuj metode szkoleń: {{method?.name_pl}}</h2>
+    <h2 *ngIf="idMethod == 0">Dodaj nową metode szkoleń</h2>
+    <div class="white_block editmethod">
+      <button mat-raised-button color="primary" routerLink="/methods">
+        <mat-icon>keyboard_arrow_left</mat-icon> Wstecz
+      </button>
+      <div>
+        <button type="button" mat-raised-button color="warn" *ngIf="idMethod > 0 && method?.active > 0"
+          (click)="removeMethod(idMethod)" matTooltip="Usuń metode szkoleń" matTooltipPosition="below"><span
+            class="material-icons">delete_forever</span></button>
+        <button type="submit" form="ngForm" mat-raised-button color="primary" matTooltip="Zapisz zmiany"
+          matTooltipPosition="below"><span class="material-icons">save</span></button>
+      </div>
+    </div>
+    <div class="white_block">
+      <form id="ngForm" [formGroup]="formOptions" (ngSubmit)="updateMethod(formDirective)" #formDirective="ngForm"
+        *ngIf="!methodLoading">
+        <div class="row">
+          <div class="col-12 col-sm-12 col-md-6">
+            <mat-form-field>
+              <input matInput type="text" formControlName="name_pl" placeholder="Nazwa (PL)">
+              <mat-error *ngIf="formOptions.controls['name_pl'].errors?.required">
+                Pole wymagane</mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput type="text" formControlName="name_list_pl" placeholder="Nazwa na liście (PL)">
+              <mat-error *ngIf="formOptions.controls['name_list_pl'].errors?.required">
+                Pole wymagane</mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput type="text" formControlName="link_pl" placeholder="Link (PL)">
+              <mat-error *ngIf="formOptions.controls['link_pl'].errors?.required">
+                Pole wymagane</mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput type="number" formControlName="rank" placeholder="Pozycja">
+              <mat-error *ngIf="formOptions.controls['rank'].errors?.required">
+                Pole wymagane</mat-error>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6">
+            <mat-form-field>
+              <input matInput type="text" formControlName="name_en" placeholder="Nazwa (EN)">
+              <mat-error *ngIf="formOptions.controls['name_en'].errors?.required">
+                Pole wymagane</mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput type="text" formControlName="name_list_en" placeholder="Nazwa na liście (EN)">
+              <mat-error *ngIf="formOptions.controls['name_list_en'].errors?.required">
+                Pole wymagane</mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput type="text" formControlName="link_en" placeholder="Link (EN)">
+              <mat-error *ngIf="formOptions.controls['link_en'].errors?.required">
+                Pole wymagane</mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput type="text" formControlName="ico" placeholder="Ikona">
+              <mat-error *ngIf="formOptions.controls['ico'].errors?.required">
+                Pole wymagane</mat-error>
+            </mat-form-field>
+          </div>
+          <div class="col-12" *ngIf="method.active == 0">
+            <mat-checkbox formControlName="active">Dodaj do listy metod szkoleń</mat-checkbox>
+            <p style="text-align: center;"><strong>Metoda szkoleń została usunięta z panelu!!</strong></p>
+          </div>
+        </div>
+    <div class="editLast">
+        <p *ngIf="method.userEdit">Edytowane przez: {{method.userEdit?.first_name}}
+          {{method.userEdit?.last_name}}
+          {{method.updated_at | date:"dd-MM-yyyy HH:mm"}}</p>
+        <p *ngIf="method.userCreate">Dodane przez: {{method.userCreate?.first_name}} {{method.userCreate?.last_name}} {{method.created_at | date:"dd-MM-yyyy HH:mm"}}</p>
+    </div>
+      </form>
+      <div class="spinner_center" *ngIf="methodLoading">
+        <mat-spinner></mat-spinner>
+      </div>
+    </div>
+  </div>
+</section>

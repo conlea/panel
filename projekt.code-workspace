@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "..\\ApiConleaDev"
+		},
+		{
+			"path": "..\\ApiConleaProd"
+		}
+	],
+	"settings": {}
+}

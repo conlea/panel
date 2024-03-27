@@ -1,0 +1,57 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{data.header}}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__content" id="addPerson" mat-dialog-content>
+  <form [formGroup]="formOptions" (ngSubmit)="addNewPerson()" #formDirective="ngForm">
+    <mat-form-field class="example-full-width">
+      <input type="email" placeholder="Email"
+        matInput formControlName="email" >
+      <mat-error *ngIf="formOptions.controls['email'].errors?.required">
+        Pole wymagane</mat-error>
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <input type="text" placeholder="Imię"
+        matInput formControlName="firstname" >
+      <mat-error *ngIf="formOptions.controls['firstname'].errors?.required">
+        Pole wymagane</mat-error>
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <input type="text" placeholder="Nazwisko"
+        matInput formControlName="lastname" >
+      <mat-error *ngIf="formOptions.controls['lastname'].errors?.required">
+        Pole wymagane</mat-error>
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <input type="text" placeholder="Telefon"
+        matInput formControlName="phone" >
+      <mat-error *ngIf="formOptions.controls['phone'].errors?.required">
+        Pole wymagane</mat-error>
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <input type="text" placeholder="Ulica nr"
+        matInput formControlName="address" >
+      <mat-error *ngIf="formOptions.controls['address'].errors?.required">
+        Pole wymagane</mat-error>
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <input type="text" placeholder="Miasto"
+        matInput formControlName="city" >
+      <mat-error *ngIf="formOptions.controls['city'].errors?.required">
+        Pole wymagane</mat-error>
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <input type="text" placeholder="Kod pocztowy"
+        matInput formControlName="zip" >
+      <mat-error *ngIf="formOptions.controls['zip'].errors?.required">
+        Pole wymagane</mat-error>
+    </mat-form-field>
+
+  </form>
+</div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <button mat-raised-button color="default" (click)="exitDialog()">Zamknij</button>
+  <button mat-raised-button type="submit" color="primary" (click)="addNewPerson()" [disabled]="!formOptions.valid" >Dodaj</button>
+</div>

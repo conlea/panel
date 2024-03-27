@@ -1,0 +1,41 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{data.header}}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__content vindicationMail" mat-dialog-content>
+  <div class="formField">
+    <label for="title">Tytuł: </label>
+    <input type="text" name="title" [value]="title" placeholder="Tytuł:" disabled>
+  </div>
+  <div class="formField">
+    <label for="mailfrom">Od: </label>
+    <input type="email" name="mailfrom" [value]="mailFrom" placeholder="Od:" disabled>
+  </div>
+  <div class="formField">
+    <label for="mailfrom">Do: </label>
+    <input type="email" name="mailfrom" [value]="mailTo" placeholder="Od:" disabled>
+  </div>
+  <div class="formField">
+    <label for="mailfrom">Treść wiadomości: </label>
+    <div class="mailContent" [innerHTML]="content"></div>
+  </div>
+
+
+  <!-- <mat-form-field>
+    <input matInput type="text" [value]="title" placeholder="Tytuł:" disabled>
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput type="email" [value]="mailFrom" placeholder="Od:" disabled>
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput type="email" [value]="mailTo" placeholder="Do:" disabled>
+  </mat-form-field>
+  <mat-form-field class="mailContent">
+    <mat-label>Treść wiadomości:</mat-label>
+    <div [innerHTML]="content" >
+      <textarea matInput value="1" placeholder="Treść wiadomości:"></textarea>
+    </div>
+  </mat-form-field> -->
+</div>

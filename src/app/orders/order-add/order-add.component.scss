@@ -1,0 +1,119 @@
+#addOrder {
+  .searchProduct {
+    width: 100%;
+  }
+
+  .innputText {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    .mat-form-field {
+      flex: 1;
+    }
+    button {
+      border-radius: 0;
+      margin-bottom: 1.25em;
+    }
+  }
+  .editOrder {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+
+    & > div {
+      margin: 0 5px;
+
+      button {
+        margin: 0 5px;
+      }
+    }
+  }
+
+  .checkBoxContent {
+    padding: 0;
+    margin: 10px 0;
+
+    .mat-checkbox {
+      padding: 0;
+
+      label {
+        margin: 0;
+      }
+    }
+  }
+
+  .orderPerson {
+    h3 {
+      font-size: 2rem;
+      margin: 0;
+    }
+
+    .addPerson {
+      .innputText {
+        display: flex;
+        align-items: center;
+
+        button {
+          border-radius: 0;
+          margin-bottom: 1.25em;
+        }
+      }
+    }
+
+    .personList {
+      .personBox {
+        display: flex;
+        border: 1px solid #ccc;
+        padding: 10px 15px;
+        margin: 5px 0;
+        align-items: center;
+        justify-content: space-between;
+
+        h4 {
+          margin: 0;
+        }
+
+        span {
+          cursor: pointer;
+        }
+
+        .mat-form-field-wrapper {
+          padding: 0;
+        }
+      }
+    }
+
+    .noNameTicket {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+  }
+
+  .summary {
+    h3 {
+      font-size: 2rem;
+    }
+
+    .totalPrice {
+      margin: 2rem 0 0;
+
+      p {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin: 0;
+        font-weight: 700;
+      }
+    }
+
+    .saveBtn {
+      margin-top: 10px;
+    }
+  }
+}
+
+:host ::ng-deep .mat-list-base .mat-list-item .mat-list-item-content {
+  justify-content: space-between;
+}

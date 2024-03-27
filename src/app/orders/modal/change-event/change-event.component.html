@@ -1,0 +1,23 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{data.header}}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__content" id="addPerson" mat-dialog-content>
+  <form [formGroup]="formOptions" (ngSubmit)="changeEventTerm()" #formDirective="ngForm">
+    <mat-form-field>
+      <mat-select formControlName="trainingDate_id" placeholder="Termin wydarzenia">
+        <mat-option *ngFor="let eventT of activeEventList" [value]="eventT.id">{{productName}}-{{eventT.idTermTraining}} ({{eventT.datestart | date: 'dd.MM'}}-{{eventT.dateend | date: 'dd.MM.yyyy'}})</mat-option>
+      </mat-select>
+      <mat-error *ngIf="formOptions.controls['trainingDate_id'].errors?.required">Pole wymagane</mat-error>
+    </mat-form-field>
+  </form>
+</div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <button mat-raised-button color="default" (click)="exitDialog()">Zamknij</button>
+  <button mat-raised-button type="submit" color="primary" (click)="changeEventTerm()">Zapisz</button>
+</div>
+<div class="spinner_center fixed" *ngIf="eventLoading">
+  <mat-spinner></mat-spinner>
+</div>

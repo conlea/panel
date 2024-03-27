@@ -1,0 +1,47 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{data.header}}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__content" id="generateNewLink" mat-dialog-content>
+  <div class="contentLoading" *ngIf="isLoading">
+    <div class="spinner_center">
+      <mat-spinner></mat-spinner>
+    </div>
+  </div>
+  <form [formGroup]="formOptions" (ngSubmit)="editPayU()" #formDirective="ngForm">
+    <mat-form-field>
+      <input matInput type="text" formControlName="payuLink" placeholder="Link do PayU">
+      <mat-error *ngIf="formOptions.controls['payuLink'].errors?.required">
+        Pole wymagane</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput type="text" formControlName="orderIDPayu" placeholder="Order ID">
+      <mat-error *ngIf="formOptions.controls['orderIDPayu'].errors?.required">
+        Pole wymagane</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Status płatności</mat-label>
+      <mat-select formControlName="orderPayUStatus">
+        <mat-option value="COMPLETED">COMPLETED</mat-option>
+        <mat-option value="NEW">NEW</mat-option>
+        <mat-option value="CONFIRMED">CONFIRMED</mat-option>
+        <mat-option value="BRAK PŁATNOŚCI">BRAK PŁATNOŚCI</mat-option>
+        <mat-option value="PENDING">PENDING</mat-option>
+        <mat-option value="CANCELED">CANCELED</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field color="primary">
+      <mat-label>Data płatności PayU</mat-label>
+      <input matInput [matDatepicker]="picker1" formControlName="orderPayDate">
+      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+      <mat-datepicker #picker1></mat-datepicker>
+    </mat-form-field>
+  </form>
+</div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <button mat-raised-button color="default" (click)="exitDialog()">Zamknij</button>
+  <button mat-raised-button color="default" (click)="generateLink()">Generuj nowy link</button>
+  <button mat-raised-button type="submit" color="primary" (click)="editPayU()">Zapisz</button>
+</div>

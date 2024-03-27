@@ -1,0 +1,392 @@
+$color-primary: #451356;
+$color-secondary: #ebb531;
+$color-lmit: #e65f3a;
+$color-conlea: #ffa900;
+
+@mixin section {
+  float: left;
+  width: 100%;
+  position: relative;
+}
+
+@mixin placeholder {
+  &::-webkit-input-placeholder {
+    @content;
+  }
+
+  &::-moz-placeholder {
+    @content;
+  }
+
+  &:-ms-input-placeholder {
+    @content;
+  }
+
+  &:-moz-placeholder {
+    @content;
+  }
+}
+
+// Mixin pozwalajacy ustawienie 'color' i 'background' zaznaczonego tekstu
+@mixin selection {
+  &::-moz-selection {
+    @content;
+  }
+
+  &::selection {
+    @content;
+  }
+}
+
+@mixin lg {
+  @media #{$min-md} {
+    @content;
+  }
+}
+
+@mixin md {
+  @media #{$max-md} {
+    @media #{$min-sm} {
+      @content;
+    }
+  }
+}
+
+@mixin sm {
+  @media #{$max-sm} {
+    @media #{$min-xs} {
+      @content;
+    }
+  }
+}
+
+@mixin xs {
+  @media #{$max-xs} {
+    @media #{$min-xx} {
+      @content;
+    }
+  }
+}
+
+@mixin xx {
+  @media #{$max-xx} {
+    @content;
+  }
+}
+
+
+
+#pageWrapper {
+  // background: url(../assets/img/logoLMIT_bg.png) repeat top left;
+  flex: 1;
+}
+
+mat-drawer-container {
+  min-height: 100vh;
+}
+
+.mat-drawer-content {
+  // margin-left: 70px;
+}
+
+.page_sidenav {
+  // width: 80px;
+  background-color: #101218;
+
+  .navContent {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+
+    .blockSettings {
+      background-color: #1E232D;
+      padding: 2rem 0;
+
+      .profile {
+        display: flex;
+        align-items: center;
+        padding: 10px 20px;
+        cursor: pointer;
+
+        &__img {
+          width: 35px;
+          height: 35px;
+          border-radius: 50%;
+          overflow: hidden;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        }
+
+        &__content {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          color: #fff;
+          margin-left: 10px;
+
+          &.show {
+            display: block;
+          }
+
+          &.hide {
+            display: none;
+          }
+
+          span {
+            font-size: 1rem;
+          }
+
+          p {
+            margin: 0;
+            font-size: 1.4rem;
+            line-height: 1.4rem;
+          }
+        }
+      }
+
+      nav {
+        margin: 0;
+      }
+    }
+
+    &.isOpen {
+      .navTitle {
+        justify-content: space-between;
+      }
+
+      nav {
+        a {
+          justify-content: flex-start;
+        }
+      }
+    }
+  }
+
+  // visibility: unset !important;
+  // transform: translate3d(calc(-100% + 70px), 0, 0);
+
+  &.mat-drawer-opened {
+    // min-width: 225px;
+    // transform: translate3d(0, 0, 0) !important;
+
+    .navTitle {
+
+      h2 {
+        max-width: 100%;
+        opacity: 1;
+      }
+    }
+
+  }
+
+  .navTitle {
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    h2 {
+      opacity: 0;
+      overflow: hidden;
+      max-width: 0;
+      color: #8997AB;
+      font-weight: 700;
+      font-size: 2rem;
+      margin: 0;
+
+      // transition: all 0.3s ease;
+      &.show {
+        display: block;
+      }
+
+      &.hide {
+        display: none;
+      }
+    }
+
+    button {
+      padding: 0;
+      transform: scale(.5);
+
+      &:focus {
+        outline: -webkit-focus-ring-color auto 0px;
+      }
+    }
+
+    .hamburger-inner {
+      background-color: #fff;
+
+      &:before {
+        background-color: #fff;
+      }
+
+      &:after {
+        background-color: #fff;
+      }
+    }
+  }
+
+  .logotyp {
+    padding: 5px 0;
+    height: 60px;
+
+    img {
+      object-fit: contain;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  // img {
+  //   width: 100%;
+  //   padding: 7px 5px;
+  // }
+
+  nav {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+
+    a {
+      position: relative;
+      padding: 10px 20px;
+      color: #fff;
+      font-size: 1.6rem;
+      line-height: 2.2rem;
+      font-weight: 400;
+      z-index: 5;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      // text-align: center;
+
+      span {
+        margin-left: 5px;
+        // transition: all 0.3s ease;
+        // max-width: 0;
+        // display: none;
+        // overflow: hidden;
+
+        &.hide {
+          display: none;
+          // opacity: 0;
+          // max-width: 0;
+          // width: 0;
+          // transition: all 0.1s ease-out;
+          // transition: max-width 0.2s ease;
+        }
+
+        &.show {
+          display: block;
+          // opacity: 1;
+          // max-width: 200px;
+          // width: 120px;
+          // transition: all 0.35s ease-in;
+          // transition: all 0.1s ease-out;
+          // transition: max-width 0.2s ease;
+        }
+      }
+
+      mat-icon,
+      fa-icon {
+        margin-right: 0px;
+        vertical-align: bottom;
+        // transition: all 0.3s ease;
+        text-align: left;
+      }
+
+      .ng-fa-icon {
+        font-size: 24px;
+        display: inline-block;
+        width: 24px;
+      }
+
+      &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 0;
+        z-index: -1;
+        background-color: #f1f3f8;
+        transition: all 0.3s ease;
+      }
+
+      &:hover {
+        color: $color-primary;
+
+        &:before {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+}
+
+#page_main {
+  display: flex;
+  flex-direction: column;
+  max-height: 100vh;
+  min-height: 100vh;
+  justify-content: space-between;
+  // background-color: #fff;
+}
+
+.hamburgerBtnContent {
+  background: rgb(112, 1, 87);
+  background: linear-gradient(90deg, rgba(112, 1, 87, 1) 0%, rgba(84, 90, 104, 1) 100%);
+  display: flex;
+  justify-content: space-between;
+
+  .hamburger {
+    &:focus {
+      outline: 0px auto -webkit-focus-ring-color;
+    }
+
+    &.conlea {
+      .hamburger-inner {
+        background-color: $color-conlea;
+
+        &:before,
+        &:after {
+          background-color: $color-conlea;
+        }
+      }
+    }
+
+    &.lmit {
+      .hamburger-inner {
+        background-color: $color-lmit;
+
+        &:before,
+        &:after {
+          background-color: $color-lmit;
+        }
+      }
+    }
+  }
+
+}
+
+footer {
+  background-color: #101218;
+  padding: 1rem 0;
+  z-index: 100;
+
+  p {
+    font-size: 1.3rem;
+    color: #F1F5F8;
+    text-align: center;
+    line-height: 1.6rem;
+    margin: 0;
+  }
+}

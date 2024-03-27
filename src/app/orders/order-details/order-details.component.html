@@ -1,0 +1,1635 @@
+<section class="section" id="orderDetails">
+  <div class="orderDetailsHead">
+    <a routerLink="/orders"><mat-icon>arrow_back</mat-icon> Cofnij</a>
+    <div class="groupBtn">
+      <p *ngIf="orderNotes.length > 0">
+        <u>{{ orderNotes.length }} notatek</u> ({{ noteUnresolved }}
+        nierozwiązane)
+      </p>
+      <button
+        type="button"
+        mat-raised-button
+        color="warn"
+        matTooltip="Usuń zamówienie"
+        matTooltipPosition="below"
+        (click)="removeOrder(idOrder)"
+      >
+        <span class="material-icons">delete_forever</span> Usuń
+      </button>
+      <div
+        class="refreshBtn"
+        (click)="ngOnInit()"
+        matTooltip="Odśwież"
+        matTooltipPosition="below"
+      >
+        <mat-icon><span class="material-icons">refresh</span></mat-icon>
+      </div>
+    </div>
+  </div>
+  <div class="orderDetailsInfo" *ngIf="!orderLoading">
+    <div class="headTitle">
+      <div class="boxInfo">
+        <div class="boxHead">
+          <h4>
+            <a
+              *ngIf="order.companyID; else nocompanyId"
+              [href]="
+                'https://app.hubspot.com/contacts/' +
+                HSId +
+                '/company/' +
+                order.companyID
+              "
+              target="_blank"
+            >
+              {{ order?.companyName }}
+            </a>
+            <ng-template #nocompanyId>
+              {{ order?.companyName }}
+            </ng-template>
+          </h4>
+          <h2 *ngIf="reportingPerson">
+            <a
+              [href]="
+                'https://app.hubspot.com/contacts/' +
+                HSId +
+                '/contact/' +
+                reportingPerson.personHS_id
+              "
+              target="_blank"
+            >
+              {{ reportingPerson.firstname }} {{ reportingPerson.lastname }}
+            </a>
+          </h2>
+          <p>
+            <a
+              *ngIf="reportingPerson.phone"
+              [href]="'tel:' + reportingPerson.phone"
+              >{{ reportingPerson.phone }}</a
+            >
+            <a
+              *ngIf="reportingPerson.email"
+              [href]="'mailto:' + reportingPerson.email"
+              >{{ reportingPerson.email }}</a
+            >
+          </p>
+        </div>
+        <div class="boxFooter">
+          <div class="orderNr">
+            <h5>Numer zamówienia:</h5>
+            <p>{{ orderTrainingDate?.idTermTraining }}/{{ idOrder }}</p>
+            <h5></h5>
+            <p>
+              <a
+                [href]="
+                  'https://app.hubspot.com/contacts/' +
+                  HubSpotId +
+                  '/deal/' +
+                  order?.dealsID
+                "
+                target="_blank"
+                matTooltip="Przejdź do Deala"
+                matTooltipPosition="right"
+              >
+                Przejdź do deala <span class="material-icons">launch</span></a
+              >
+            </p>
+          </div>
+          <div class="orderStatus">
+            <select
+              [(ngModel)]="statusID"
+              placeholder="Status"
+              (change)="saveStatus()"
+              [style.background-color]="'#' + selectedStatus?.color_status?.hex"
+            >
+              <option
+                *ngFor="let status of orderStatus"
+                [style.background]="'#' + status.color_status?.hex"
+                [value]="status.id"
+              >
+                <span>{{ status.name }}</span>
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="boxInfo">
+        <div class="boxHead">
+          <h3>
+            {{ orderTraining?.name_pl }}
+            <strong>
+              <span
+                class="material-icons"
+                matTooltip="Edytuj termin wydarzenia"
+                matTooltipPosition="below"
+                (click)="changeEvent()"
+                >edit</span
+              ></strong
+            >
+          </h3>
+          <p>
+            {{ orderPlace?.name_pl }} ({{ orderPlace?.country_pl }}) /
+            {{ orderTrainingDate?.datestart | date : "dd.MM" }}-{{
+              orderTrainingDate?.dateend | date : "dd.MM.yyyy"
+            }}
+          </p>
+        </div>
+        <div class="boxFooter">
+          <div class="orderNr">
+            <h5>ID terminu:</h5>
+            <p>
+              <a
+                [routerLink]="[
+                  '/training-dates',
+                  orderTrainingDate?.id,
+                  'details'
+                ]"
+              >
+                {{ orderTrainingDate?.idTermTraining }}</a
+              >
+            </p>
+          </div>
+          <div class="orderlang">
+            <h5>Język</h5>
+            <p>{{ orderTrainingDate?.lang }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="boxInfo">
+        <div class="boxHead">
+          <h3>
+            <ng-container *ngIf="invoices.length > 0; else noInvoices">
+              <ng-container [ngSwitch]="order.orderPayUStatus">
+                <ng-container *ngSwitchCase="'CONFIRMED'">
+                  <strong
+                    class="isPay"
+                    [ngClass]="{ proforma: invoices[0].kind == 'proforma' }"
+                    >{{
+                      order?.totalPrice
+                        | currency : order?.currency : "symbol" : "1.2-2" : "pl"
+                    }}
+                  </strong>
+                </ng-container>
+                <ng-container *ngSwitchCase="'COMPLETED'">
+                  <strong
+                    class="isPay"
+                    [ngClass]="{ proforma: invoices[0].kind == 'proforma' }"
+                    >{{
+                      order?.totalPrice
+                        | currency : order?.currency : "symbol" : "1.2-2" : "pl"
+                    }}
+                  </strong>
+                </ng-container>
+                <ng-container *ngSwitchDefault>
+                  <ng-container
+                    *ngIf="
+                      (invoices[0].payment_to | date : 'yyyyMMdd') <
+                        (dateNow | date : 'yyyyMMdd');
+                      else relaxTheyPayLater
+                    "
+                  >
+                    <strong
+                      class="noPay"
+                      [ngClass]="{ proforma: invoices[0].kind == 'proforma' }"
+                      >{{
+                        order?.totalPrice
+                          | currency
+                            : order?.currency
+                            : "symbol"
+                            : "1.2-2"
+                            : "pl"
+                      }}
+                    </strong>
+                  </ng-container>
+                  <ng-template #relaxTheyPayLater>
+                    <strong
+                      [ngClass]="{ proforma: invoices[0].kind == 'proforma' }"
+                      >{{
+                        order?.totalPrice
+                          | currency
+                            : order?.currency
+                            : "symbol"
+                            : "1.2-2"
+                            : "pl"
+                      }}
+                    </strong>
+                  </ng-template>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+            <ng-template #noInvoices>
+              <strong
+                >{{
+                  order?.totalPrice
+                    | currency : order?.currency : "symbol" : "1.2-2" : "pl"
+                }}
+              </strong>
+            </ng-template>
+            <span *ngIf="discountDetails">
+              -{{ discountDetails.code_value }}
+              <span
+                *ngIf="discountDetails.type == 'percent'; else discountCurrency"
+                >%</span
+              ><ng-template #discountCurrency>{{
+                order?.currency
+              }}</ng-template>
+              /
+              {{ discountDetails.code_name }}
+            </span>
+          </h3>
+          <p *ngIf="invoices.length > 0">
+            <ng-container [ngSwitch]="order.orderPayUStatus">
+              <ng-container *ngSwitchCase="'CONFIRMED'">
+                <a
+                  class="isPay"
+                  [ngClass]="{
+                    proforma: invoices[0].kind == 'proforma'
+                  }"
+                  [href]="invoices[0].view_url"
+                  target="_blank"
+                  >{{ invoices[0].number }} ({{ invoices[0].invoice_id }})</a
+                >
+              </ng-container>
+              <ng-container *ngSwitchCase="'COMPLETED'">
+                <a
+                  class="isPay"
+                  [ngClass]="{
+                    proforma: invoices[0].kind == 'proforma'
+                  }"
+                  [href]="invoices[0].view_url"
+                  target="_blank"
+                  >{{ invoices[0].number }} ({{ invoices[0].invoice_id }})</a
+                >
+              </ng-container>
+              <ng-container *ngSwitchDefault>
+                <ng-container
+                  *ngIf="
+                    (invoices[0].payment_to | date : 'yyyyMMdd') <
+                      (dateNow | date : 'yyyyMMdd');
+                    else relaxTheyCanPayLater
+                  "
+                >
+                  <a
+                    class="noPay"
+                    [ngClass]="{
+                      proforma: invoices[0].kind == 'proforma'
+                    }"
+                    [href]="invoices[0].view_url"
+                    target="_blank"
+                    >{{ invoices[0].number }} ({{ invoices[0].invoice_id }})</a
+                  >
+
+                  <span>
+                    <ng-container *ngIf="calculateDiff(invoices[0].payment_to)">
+                      ({{ calculateDiff(invoices[0].payment_to) }} dni)
+                    </ng-container>
+                  </span>
+                </ng-container>
+                <ng-template #relaxTheyCanPayLater>
+                  <a
+                    [ngClass]="{
+                      proforma: invoices[0].kind == 'proforma'
+                    }"
+                    [href]="invoices[0].view_url"
+                    target="_blank"
+                    >{{ invoices[0].number }} ({{ invoices[0].invoice_id }})</a
+                  >
+                  <span
+                    >({{ invoices[0].payment_to | date : "dd.MM.yyyy" }})</span
+                  >
+                </ng-template>
+              </ng-container>
+            </ng-container>
+          </p>
+        </div>
+
+        <div class="boxFooter">
+          <div class="nonameTickets" *ngIf="order.noNameTickets > 0">
+            <p>
+              <span class="material-icons">warning</span>
+              nieprzypisane pozycje zamówienia:
+              <strong>{{ order.noNameTickets }}</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <mat-tab-group dynamicHeight *ngIf="!orderLoading">
+    <mat-tab label="Lista uczestników" class="matTabs">
+      <div class="whiteBoxContent">
+        <div class="tableHeadInfo">
+          <div class="couting">
+            <h2>Uczestnicy</h2>
+          </div>
+
+          <div class="getFile">
+            <button
+              type="button"
+              mat-raised-button
+              color="primary"
+              (click)="addNewPersonToOrder()"
+              [disabled]="isInvoiceVAT"
+            >
+              <!-- [matMenuTriggerFor]="nonameTicketMenu" -->
+              <span class="material-icons">add_circle</span> Dodaj osobę
+            </button>
+          </div>
+        </div>
+        <mat-menu #nonameTicketMenu="matMenu">
+          <button mat-menu-item (click)="addNewPersonToOrder()">
+            <mat-icon>person_add</mat-icon>
+            <span>Dodaj nowa osobę do zamówienia</span>
+          </button>
+          <!-- <button mat-menu-item (click)="addPersonToNoNameTicket('')">
+            <mat-icon>person_outline</mat-icon>
+            <span>Przypisz osobę do biletu z HS</span>
+          </button> -->
+          <!-- <a
+            *ngIf="orderCompany.id == 1; else isLMITForm"
+            mat-menu-item
+            [href]="formNonameTicketsConlea + idOrder"
+            target="_blank"
+          >
+            <mat-icon>reply</mat-icon>
+            <span>Formularz zapisu uczestników</span>
+          </a> -->
+          <ng-template #isLMITForm>
+            <a
+              mat-menu-item
+              [href]="formNonameTicketsLmit + idOrder"
+              target="_blank"
+            >
+              <mat-icon>reply</mat-icon>
+              <span>Formularz zapisu uczestników</span>
+            </a>
+          </ng-template>
+        </mat-menu>
+
+        <mat-table class="usersList" [dataSource]="usersListSource">
+          <ng-container matColumnDef="person">
+            <mat-header-cell *matHeaderCellDef>Osoba</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <div class="innerElement">
+                <ng-container *ngIf="element.firstname; else noNameUser">
+                  <strong>
+                    <a
+                      *ngIf="element.personHS_id; else noPersonHS"
+                      [href]="
+                        'https://app.hubspot.com/contacts/' +
+                        HSId +
+                        '/contact/' +
+                        element.personHS_id
+                      "
+                      target="_blank"
+                      >{{ element.firstname }} {{ element.lastname }}</a
+                    >
+                    <ng-template #noPersonHS>{{
+                      element.firstname
+                    }}</ng-template> </strong
+                  ><br />
+                  <!-- nazwa firmy -->
+                </ng-container>
+                <ng-template #noNameUser>
+                  <strong>Pozycja nieprzypisana</strong>
+                </ng-template>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="contact">
+            <mat-header-cell *matHeaderCellDef>Kontakt</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <div class="innerElement">
+                <a [href]="'mailto:' + element.email">{{ element.email }}</a
+                ><br />
+                <a [href]="'tel:' + element.phone">{{ element.phone }}</a>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="ticket">
+            <mat-header-cell *matHeaderCellDef>Bilet</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <div
+                class="innerElement"
+                *ngIf="element.userTicket; else noTicketUser"
+              >
+                <p>
+                  {{ element.userTicket["name_" + order.formLang] }}
+                </p>
+              </div>
+              <ng-template #noTicketUser>
+                <div class="innerElement">
+                  <p>
+                    {{ orderTicket["name_" + order.formLang] }}
+                  </p>
+                </div>
+              </ng-template>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="additives">
+            <mat-header-cell *matHeaderCellDef>Dodatki</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <div class="innerElement">
+                <ng-container *ngIf="element.take_exam">
+                  <span>Egzamin</span> <br />
+                </ng-container>
+                <ng-container *ngIf="element.take_book">
+                  <span>Materiały szkoleniowe</span> <br />
+                </ng-container>
+                <ng-container *ngIf="element.take_take2">
+                  <span>Take2 re-sit</span>
+                </ng-container>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <div class="btnSection">
+                <button
+                  *ngIf="!isInvoiceVAT && element.id"
+                  type="button"
+                  (click)="editPersonInOrder(element)"
+                  matTooltip="Edytuj"
+                  matTooltipPosition="above"
+                >
+                  <span class="material-icons">edit</span>
+                  Edytuj
+                </button>
+                <ng-container *ngIf="element.personHS_id; else addNewPerson">
+                  <button
+                    type="button"
+                    (click)="changeUserOrder(element)"
+                    matTooltip="Zmień osobę"
+                    matTooltipPosition="above"
+                  >
+                    <span class="material-icons">supervisor_account</span>
+                    zmień osobę
+                  </button>
+                  <a
+                    [href]="
+                      'https://app.hubspot.com/contacts/' +
+                      HSId +
+                      '/contact/' +
+                      element.personHS_id
+                    "
+                    target="_blank"
+                    *ngIf="element.firstname"
+                    matTooltip="Szczegóły kontaktu"
+                    matTooltipPosition="above"
+                    ><span class="material-icons"> launch </span> zobacz
+                    szczegóły</a
+                  >
+                </ng-container>
+                <ng-template #addNewPerson>
+                  <button
+                    type="button"
+                    (click)="addPersonToNoNameTicket(element)"
+                    matTooltip="Zmień osobę"
+                    matTooltipPosition="above"
+                  >
+                    <span class="material-icons">person</span>
+                    Przypisz osobę
+                  </button>
+                </ng-template>
+              </div>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="usersListColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: usersListColumns"></mat-row>
+        </mat-table>
+
+        <mat-list class="userList" *ngIf="false">
+          <ng-container *ngFor="let person of personList">
+            <ng-container *ngIf="person.isParticipant > 0">
+              <mat-list-item>
+                <span class="listItem">
+                  <p *ngIf="person.firstname; else noHS">
+                    {{ person.firstname }}
+                    {{ person.lastname }}
+                    <!-- <span *ngIf="person.isReportingPerson > 0"
+                      >(osoba zgłaszająca)</span
+                    > -->
+                  </p>
+                  <ng-template #noHS>
+                    <p>Uczestnik został usunięty z bazy HS :(</p>
+                  </ng-template>
+                  <div class="btnSection">
+                    <button
+                      type="button"
+                      (click)="changeUserOrder(person)"
+                      matTooltip="Zmień osobę"
+                      matTooltipPosition="above"
+                    >
+                      <span class="material-icons">supervisor_account</span>
+                      zmień osobę
+                    </button>
+
+                    <a
+                      [href]="
+                        'https://app.hubspot.com/contacts/' +
+                        HSId +
+                        '/contact/' +
+                        person.personHS_id
+                      "
+                      target="_blank"
+                      *ngIf="person.firstname"
+                      matTooltip="Szczegóły kontaktu"
+                      matTooltipPosition="above"
+                      ><span class="material-icons"> launch </span> zobacz
+                      szczegóły</a
+                    >
+                  </div>
+                </span>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+            </ng-container>
+          </ng-container>
+          <!-- <ng-container *ngFor="let item of order.noNameTickets">
+            <mat-list-item>
+              <span class="listItem">
+                <p>Pozycja nieprzypisana {{ item }}</p>
+                <div class="btnSection">
+                </div>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+          </ng-container> -->
+        </mat-list>
+      </div>
+    </mat-tab>
+    <mat-tab label="Faktura" class="matTabs">
+      <div class="whiteBoxContent">
+        <div class="tableHeadInfo">
+          <div class="couting">
+            <h2>Lista faktur</h2>
+          </div>
+          <div class="getFile">
+            <button
+              mat-raised-button
+              color="primary"
+              matTooltip="Więcej opcji"
+              matTooltipPosition="below"
+              [matMenuTriggerFor]="invoiceMenu"
+            >
+              <mat-icon>more_vert</mat-icon> Więcej
+            </button>
+          </div>
+        </div>
+        <mat-menu #invoiceMenu="matMenu">
+          <button mat-menu-item (click)="addOrderInvoice('proforma')">
+            <mat-icon>receipt</mat-icon>
+            <span>Wygeneruj Fakture proforma</span>
+          </button>
+          <button mat-menu-item (click)="addOrderInvoice('vat')">
+            <mat-icon>receipt</mat-icon>
+            <span>Wygeneruj Fakture VAT</span>
+          </button>
+          <button mat-menu-item (click)="addInvoice()">
+            <mat-icon>add</mat-icon>
+            <span>Dodaj fakturę</span>
+          </button>
+          <!-- <button mat-menu-item>
+                  <mat-icon>notifications_off</mat-icon>
+                  <span>Disable alerts</span>
+                </button> -->
+        </mat-menu>
+        <mat-list>
+          <ng-container *ngFor="let invoice of invoices; let i = index">
+            <mat-list-item>
+              <span class="listItem">
+                <p
+                  [ngClass]="{
+                    isPay:
+                      order?.orderPayUStatus == 'CONFIRMED' ||
+                      order?.orderPayUStatus == 'COMPLETED',
+                    noPay:
+                      (order?.orderPayUStatus != 'CONFIRMED' ||
+                        order?.orderPayUStatus != 'COMPLETED') &&
+                      (invoice.payment_to | date : 'yyyyMMdd') <
+                        (dateNow | date : 'yyyyMMdd')
+                  }"
+                >
+                  <strong>faktura {{ invoice.kind }}: </strong>
+                  <span [class.proforma]="invoice.kind === 'proforma'"
+                    >{{ invoice.number }} ({{ invoice.invoice_id }})</span
+                  >
+
+                  <ng-container *ngIf="invoice.price_net">
+                    <strong>kwota netto: </strong>
+                    {{
+                      invoice.price_net
+                        | currency : order?.currency : "symbol" : "1.2-2" : "pl"
+                    }}
+                    <strong>kwota brutto: </strong>
+                    {{
+                      invoice.price_gross
+                        | currency : order?.currency : "symbol" : "1.2-2" : "pl"
+                    }}
+                  </ng-container>
+                </p>
+                <button mat-icon-button [matMenuTriggerFor]="invoiceItemMenu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+              </span>
+            </mat-list-item>
+            <mat-menu #invoiceItemMenu="matMenu">
+              <a mat-menu-item [href]="invoice.view_url" target="_blank">
+                <mat-icon>reply</mat-icon>
+                <span>Wyświetl fakturę</span>
+              </a>
+              <button mat-menu-item (click)="sendInvoice(invoice)">
+                <mat-icon>send</mat-icon>
+                <span>Wyślij fakturę</span>
+              </button>
+              <button mat-menu-item (click)="editPayTerm(invoice)">
+                <mat-icon>edit</mat-icon>
+                <span>Edytuj termin płatności</span>
+              </button>
+              <button
+                mat-menu-item
+                (click)="updateInvoice(invoice.invoice_id, invoice.kind)"
+              >
+                <mat-icon>refresh</mat-icon>
+                <span>Aktualizuj fakturę</span>
+              </button>
+              <button
+                mat-menu-item
+                *ngIf="invoice.kind == 'proforma'"
+                (click)="transformInvoice(invoice)"
+              >
+                <mat-icon>transform</mat-icon>
+                <span>Na jej podstawie wygeneruj VAT</span>
+              </button>
+              <a
+                mat-menu-item
+                [href]="invoice.view_url + '.pdf'"
+                [download]="invoice.number"
+                target="_blank"
+              >
+                <mat-icon>download</mat-icon>
+                <span>Pobierz fakturę</span>
+              </a>
+              <button mat-menu-item (click)="removeInvoice(invoice.invoice_id)">
+                <mat-icon>delete</mat-icon>
+                <span>Usuń fakturę</span>
+              </button>
+            </mat-menu>
+            <mat-divider></mat-divider>
+          </ng-container>
+          <ng-container *ngIf="invoices.length == 0">
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              <span class="listItem">Brak faktur</span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+          </ng-container>
+        </mat-list>
+      </div>
+      <div class="whiteBoxContent">
+        <div class="tableHeadInfo">
+          <div class="couting">
+            <h2>Pozycje na fakturach</h2>
+          </div>
+        </div>
+        <mat-list>
+          <mat-list-item>
+            <span class="listItem">
+              <div class="boxMailContent">
+                <p>
+                  x{{ trainingUsers }}
+                  {{ orderTraining["name_" + order.formLang] }}
+                  <span *ngIf="orderTicket">
+                    - {{ orderTicket["name_" + order.formLang] }}</span
+                  >
+                  | {{ order?.priceTraining }} {{ order?.currency }}
+                </p>
+              </div>
+              <!-- <button mat-icon-button>
+                        <mat-icon>more_vert</mat-icon>
+                      </button> -->
+            </span>
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <ng-container *ngIf="countExam > 0">
+            <mat-list-item>
+              <span class="listItem">
+                <div class="boxMailContent">
+                  <p>
+                    x{{ countExam }}
+                    {{ orderTraining["name_short_" + order.formLang] }} -
+                    <span *ngIf="order.formLang == 'pl'; else enExam"
+                      >Egzamin</span
+                    >
+                    <ng-template #enExam>Exam</ng-template> |
+                    {{ order?.priceExam }} {{ order?.currency }}
+                  </p>
+                </div>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+          </ng-container>
+          <ng-container *ngIf="countBook > 0">
+            <mat-list-item>
+              <span class="listItem">
+                <div class="boxMailContent">
+                  <p>
+                    x{{ countBook }}
+                    {{ orderTraining["name_short_" + order.formLang] }} -
+                    <span *ngIf="order.formLang == 'pl'; else enExam"
+                      >Materiały szkoleniowe</span
+                    >
+                    <ng-template #enExam>Book</ng-template> |
+                    {{ order?.price_book }} {{ order?.currency }}
+                  </p>
+                </div>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+          </ng-container>
+
+          <ng-container *ngIf="countTake2 > 0">
+            <mat-list-item>
+              <span class="listItem">
+                <div class="boxMailContent">
+                  <p>
+                    x{{ countTake2 }}
+                    {{ orderTraining["name_short_" + order.formLang] }} -
+                    <span *ngIf="order.formLang == 'pl'; else enExam"
+                      >Take2 Re-sit Exam</span
+                    >
+                    <ng-template #enExam>Take2 Re-sit Exam</ng-template> |
+                    {{ order?.price_Take2_exam }} {{ order?.currency }}
+                  </p>
+                </div>
+                <!-- <button mat-icon-button>
+                          <mat-icon>more_vert</mat-icon>
+                        </button> -->
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+          </ng-container>
+        </mat-list>
+      </div>
+      <div class="whiteBoxContent">
+        <div class="tableHeadInfo">
+          <div class="couting">
+            <h2>Dodatkowe pozycje na fakturze</h2>
+          </div>
+          <div class="getFile">
+            <button
+              mat-raised-button
+              color="primary"
+              [matMenuTriggerFor]="invoiceItem"
+            >
+              <mat-icon>more_vert</mat-icon> Dodaj pozycję
+            </button>
+          </div>
+        </div>
+        <mat-menu #invoiceItem="matMenu">
+          <button mat-menu-item (click)="addNewPositionToInvoice()">
+            <mat-icon>add</mat-icon>
+            <span>Dodaj nową pozycję</span>
+          </button>
+        </mat-menu>
+        <mat-list>
+          <ng-container *ngFor="let position of invoicePositions">
+            <mat-list-item>
+              <span class="listItem">
+                <div class="boxMailContent">
+                  <p>
+                    x{{ position.countProduct }} {{ position.nameProduct }} |
+                    {{ position.priceProduct }} {{ order?.currency }}
+                  </p>
+                </div>
+                <button
+                  mat-icon-button
+                  [matMenuTriggerFor]="invoicePositionsItem"
+                >
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+              </span>
+              <mat-menu #invoicePositionsItem="matMenu">
+                <button mat-menu-item (click)="editPositionToInvoice(position)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Edytuj pozycję</span>
+                </button>
+                <button
+                  mat-menu-item
+                  (click)="removePositionToInvoice(position)"
+                >
+                  <mat-icon>delete</mat-icon>
+                  <span>Usuń pozycję</span>
+                </button>
+              </mat-menu>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+          </ng-container>
+        </mat-list>
+      </div>
+      <div class="whiteBoxContent">
+        <div class="tableHeadInfo">
+          <div class="couting">
+            <h2>Informacje o płatności</h2>
+          </div>
+          <div class="getFile">
+            <!-- <a
+              [href]="
+                'https://app.hubspot.com/contacts/' +
+                HubSpotId +
+                '/deal/' +
+                order?.dealsID
+              "
+              mat-raised-button
+              target="_blank"
+              matTooltip="Przejdź do Deala"
+              matTooltipPosition="left"
+              ><span class="material-icons">launch</span> Przejdź do deala</a
+            > -->
+            <button
+              type="button"
+              mat-raised-button
+              color="primary"
+              (click)="editPayData()"
+            >
+              <span class="material-icons">edit</span> Edytuj
+            </button>
+          </div>
+        </div>
+        <mat-list>
+          <mat-list-item>
+            <span class="listItem">
+              <p>
+                <strong>Płatność: </strong>
+                <span *ngIf="order.wherePay == 1">na podstawie faktury</span>
+                <span *ngIf="order.wherePay == 0">przy rejestracji</span>
+              </p>
+            </span>
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <mat-list-item *ngIf="order?.payuLink">
+            <span class="listItem">
+              <p>
+                <strong>Link PayU: </strong>
+                <a [href]="order?.payuLink" target="_blank">Link</a>
+              </p>
+            </span>
+          </mat-list-item>
+          <mat-divider *ngIf="order?.payuLink"></mat-divider>
+          <mat-list-item *ngIf="order?.payuLink">
+            <span class="listItem">
+              <p><strong>Order ID: </strong> {{ order?.orderIDPayu }}</p>
+            </span>
+          </mat-list-item>
+          <mat-divider *ngIf="order?.payuLink"></mat-divider>
+          <mat-list-item>
+            <span class="listItem">
+              <p>
+                <strong>Status Płatności: </strong>
+                <ng-container *ngIf="order?.orderPayUStatus; else noPay"
+                  >{{ order?.orderPayUStatus }}
+                </ng-container>
+                <ng-template #noPay>Brak płatności</ng-template>
+              </p>
+            </span>
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <mat-list-item *ngIf="order?.orderPayDate">
+            <span class="listItem">
+              <p>
+                <strong>Data płatności PayU/Paynow: </strong>
+                {{ order?.orderPayDate | date : "dd/MM/yyyy HH:mm" }}
+              </p>
+            </span>
+          </mat-list-item>
+          <mat-divider *ngIf="order?.orderPayDate"></mat-divider>
+        </mat-list>
+      </div>
+      <div class="whiteBoxContent">
+        <div class="tableHeadInfo">
+          <div class="couting">
+            <h2>Dane do faktury</h2>
+          </div>
+          <div class="getFile">
+            <button
+              mat-raised-button
+              color="primary"
+              matTooltip="Edytuj"
+              matTooltipPosition="below"
+              (click)="editOrderFV()"
+            >
+              <mat-icon>edit</mat-icon> Edytuj
+            </button>
+          </div>
+        </div>
+        <mat-list>
+          <ng-container *ngIf="order.isCompanyPayer > 0">
+            <mat-list-item>
+              <span class="listItem">
+                <p><strong>Płatnikiem jest: </strong> Firma</p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              <span class="listItem">
+                <p>
+                  <strong>Czy pobrano dane z GUS:</strong>
+                  <ng-container *ngIf="order?.getCompanyDataGus > 0; else noGUS"
+                    >TAK</ng-container
+                  >
+                  <ng-template #noGUS>NIE</ng-template>
+                </p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              <span class="listItem">
+                <p><strong>Nazwa firmy:</strong> {{ order?.companyName }}</p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              <span class="listItem">
+                <p><strong>Ulica:</strong> {{ order?.companyStreet }}</p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              <span class="listItem">
+                <p><strong>Miasto:</strong> {{ order?.companyCity }}</p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              <span class="listItem">
+                <p>
+                  <strong>Kod pocztowy:</strong> {{ order?.companyPostCode }}
+                </p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              <span class="listItem">
+                <p><strong>NIP:</strong> {{ order?.companyVatID }}</p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+          </ng-container>
+          <ng-container *ngIf="order.isPersonPayer > 0">
+            <mat-list-item>
+              <span class="listItem">
+                <p><strong>Płatnikiem jest:</strong> Osoba fizyczna</p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              <span class="listItem">
+                <p><strong>Ulica:</strong> {{ order?.personStreet }}</p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              <span class="listItem">
+                <p><strong>Miasto:</strong> {{ order?.personCity }}</p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              <span class="listItem">
+                <p>
+                  <strong>Kod pocztowy:</strong> {{ order?.personPostCode }}
+                </p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+          </ng-container>
+          <ng-container *ngIf="reportingPerson">
+            <mat-list-item>
+              <span class="listItem">
+                <p><strong>Imię:</strong> {{ reportingPerson.firstname }}</p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              <span class="listItem">
+                <p><strong>Nazwisko:</strong> {{ reportingPerson.lastname }}</p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              <span class="listItem">
+                <p>
+                  <strong>email: </strong>
+                  <a [href]="'mailto:' + reportingPerson.email">{{
+                    reportingPerson.email
+                  }}</a>
+                </p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              <span class="listItem">
+                <p>
+                  <strong>Tel: </strong>
+                  <a [href]="'tel:' + reportingPerson.phone">{{
+                    reportingPerson.phone
+                  }}</a>
+                </p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+          </ng-container>
+        </mat-list>
+      </div>
+
+      <div class="whiteBoxContent">
+        <div class="tableHeadInfo">
+          <div class="couting">
+            <h2>Kody rabatowe</h2>
+          </div>
+          <div class="getFile"></div>
+        </div>
+        <div class="discountCode">
+          <mat-form-field>
+            <mat-select
+              placeholder="Wybierz kod rabatowy"
+              [(ngModel)]="order.idDiscountCode"
+              [disabled]="discountDetails"
+            >
+              <!-- <mat-option value="">-</mat-option> -->
+              <mat-option
+                *ngFor="let discountCode of availableDoscountCode"
+                [value]="discountCode.id"
+                >-{{ discountCode.code_name }} (-{{ discountCode.code_value }}
+                <ng-container *ngIf="discountCode.type == 'percent'"
+                  >%</ng-container
+                >)</mat-option
+              >
+            </mat-select>
+          </mat-form-field>
+          <button
+            type="button"
+            mat-raised-button
+            color="primary"
+            [disabled]="discountDetails"
+            (click)="addDiscountToOrder()"
+          >
+            Przypisz
+          </button>
+        </div>
+      </div>
+      <div class="whiteBoxContent">
+        <div class="tableHeadInfo">
+          <div class="couting">
+            <h2>Użyty kod rabatowy</h2>
+          </div>
+          <div class="getFile"></div>
+        </div>
+        <div class="discountList">
+          <p *ngIf="discountDetails; else noDiscountUse">
+            {{ discountDetails.code_value
+            }}<span *ngIf="discountDetails.type == 'percent'">%</span
+            ><ng-template #discountCurrency>PLN</ng-template> /
+            {{ discountDetails.code_name }}
+          </p>
+          <ng-template #noDiscountUse><p>Brak</p></ng-template>
+        </div>
+      </div>
+      <div class="whiteBoxContent" *ngIf="false">
+        <div class="tableHeadInfo">
+          <div class="couting">
+            <h2>Koszty zamówienia</h2>
+          </div>
+          <div class="getFile">
+            <button
+              type="button"
+              mat-raised-button
+              color="primary"
+              (click)="editOrderCosts()"
+            >
+              <span class="material-icons">edit</span> Edytuj
+            </button>
+          </div>
+        </div>
+        <ng-container *ngIf="!isCostLoading; else costLoading">
+          <mat-list>
+            <mat-list-item>
+              <span class="listItem">
+                <p>
+                  <strong>Liczba osób biorąca udział w szkoleniu: </strong>
+                  {{ trainingUsers }}
+                </p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <ng-container *ngIf="order?.priceExam > 0; else noExam">
+              <mat-list-item>
+                <span class="listItem">
+                  <p>
+                    <strong>Czy został zamówiony egz: </strong>
+                    <span *ngIf="order?.take_exam > 0; else noTakeExam"
+                      >Tak</span
+                    >
+                    <ng-template #noTakeExam>Nie</ng-template>
+                  </p>
+                </span>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item>
+                <span class="listItem">
+                  <p>
+                    <strong>Cena egzaminu: </strong> {{ order?.priceExam }}
+                    {{ order?.currency }}
+                  </p>
+                </span>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+            </ng-container>
+            <ng-template #noExam>
+              <mat-list-item>
+                <span class="listItem">
+                  <p><strong>Egzamin: </strong> Brak</p>
+                </span>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+            </ng-template>
+            <ng-container *ngIf="order?.price_book > 0; else noBook">
+              <mat-list-item>
+                <span class="listItem">
+                  <p>
+                    <strong
+                      >Czy zostały zamówione materiały szkoleniowe:
+                    </strong>
+                    <span *ngIf="order?.take_book > 0; else noTakeBook"
+                      >Tak</span
+                    >
+                    <ng-template #noTakeBook>Nie</ng-template>
+                  </p>
+                </span>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item>
+                <span class="listItem">
+                  <p>
+                    <strong>Cena materiałów szkoleniowych: </strong>
+                    {{ order?.price_book }}
+                    {{ order?.currency }}
+                  </p>
+                </span>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+            </ng-container>
+            <ng-template #noBook>
+              <mat-list-item>
+                <span class="listItem">
+                  <p><strong>Materiały szkoleniowe: </strong> Brak</p>
+                </span>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+            </ng-template>
+            <ng-container *ngIf="order?.price_Take2_exam > 0; else noTake">
+              <mat-list-item>
+                <span class="listItem">
+                  <p>
+                    <strong>Czy została zamówiona opcja Take2 re-sit: </strong>
+                    <span *ngIf="order?.take_take2 > 0; else noTakeResit"
+                      >Tak</span
+                    >
+                    <ng-template #noTakeResit> Nie </ng-template>
+                  </p>
+                </span>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+              <mat-list-item>
+                <span class="listItem">
+                  <p>
+                    <strong>Cena Take2 re-sit: </strong>
+                    {{ order?.price_Take2_exam }} {{ order?.currency }}
+                  </p>
+                </span>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+            </ng-container>
+            <ng-template #noTake>
+              <mat-list-item>
+                <span class="listItem">
+                  <p><strong>Opcja Take2 re-sit: </strong> Brak</p>
+                </span>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+            </ng-template>
+            <mat-list-item>
+              <span class="listItem">
+                <p>
+                  <strong>Koszt jednego szkolenia: </strong>
+                  {{ order?.priceTraining }} {{ order?.currency }}
+                </p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              <span class="listItem">
+                <p>
+                  <strong>Całkowity koszt szkolenia: </strong
+                  >{{ order?.totalPrice }} {{ order?.currency }}
+                </p>
+              </span>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+        </ng-container>
+        <ng-template #costLoading>
+          <div class="spinner_center">
+            <mat-spinner></mat-spinner>
+          </div>
+        </ng-template>
+      </div>
+    </mat-tab>
+    <mat-tab label="Windykacja" class="matTabs">
+      <div class="whiteBoxContent">
+        <div class="tableHeadInfo">
+          <div class="couting">
+            <h2>
+              Lista wiadomości windykacyjnych
+              <small>(Adres odbiorcy: {{ order.vindication_email }})</small>
+            </h2>
+          </div>
+          <div class="getFile">
+            <button
+              mat-raised-button
+              color="primary"
+              [matMenuTriggerFor]="vindicationMenu"
+            >
+              <mat-icon>edit</mat-icon> Edytuj
+            </button>
+          </div>
+        </div>
+        <mat-menu #vindicationMenu="matMenu">
+          <button mat-menu-item (click)="changeVindicationEmail()">
+            <mat-icon>markunread_mailbox</mat-icon>
+            <span>Zmień adres odbiorcy</span>
+          </button>
+        </mat-menu>
+        <mat-list class="messageList">
+          <ng-container *ngFor="let vindicationItem of orderVindication">
+            <mat-list-item>
+              <div class="listItem">
+                <div class="boxMailContent">
+                  <p>
+                    <u (click)="showEmailVindication(vindicationItem)"
+                      >{{ vindicationItem.title }} ({{
+                        vindicationItem.created_at | date : "dd/MM/yyyy HH:mm"
+                      }})</u
+                    >
+                    <span class="boxMailEvent" *ngIf="vindicationItem.mailsLog">
+                      <span
+                        class="material-icons"
+                        [matTooltip]="
+                          vindicationItem.mailsLog.deliveredDate !=
+                          'Invalid date'
+                            ? 'Mail dostarczony: ' +
+                              (vindicationItem.mailsLog.deliveredDate
+                                | date : 'dd/MM/yyyy HH:mm')
+                            : ''
+                        "
+                        matTooltipPosition="right"
+                        [ngClass]="
+                          vindicationItem.mailsLog.deliveredDate !=
+                          'Invalid date'
+                            ? 'mailSuccess'
+                            : ''
+                        "
+                        >forward_to_inbox</span
+                      >
+                      <span
+                        class="material-icons"
+                        [matTooltip]="
+                          vindicationItem.mailsLog.openDate != 'Invalid date'
+                            ? 'Mail otwarty: ' +
+                              (vindicationItem.mailsLog.openDate
+                                | date : 'dd/MM/yyyy HH:mm')
+                            : ''
+                        "
+                        matTooltipPosition="right"
+                        [ngClass]="
+                          vindicationItem.mailsLog.openDate != 'Invalid date'
+                            ? 'mailSuccess'
+                            : ''
+                        "
+                        >drafts</span
+                      >
+                      <span
+                        class="material-icons"
+                        [matTooltip]="
+                          vindicationItem.mailsLog.clickDate != 'Invalid date'
+                            ? 'Kliknięto w treści maila: ' +
+                              (vindicationItem.mailsLog.clickDate
+                                | date : 'dd/MM/yyyy HH:mm')
+                            : ''
+                        "
+                        matTooltipPosition="right"
+                        [ngClass]="
+                          vindicationItem.mailsLog.clickDate != 'Invalid date'
+                            ? 'mailSuccess'
+                            : ''
+                        "
+                        >ads_click</span
+                      >
+                      <span
+                        *ngIf="vindicationItem.mailsLog.errorDate"
+                        class="material-icons"
+                        [matTooltip]="
+                          vindicationItem.mailsLog.errorDate != 'Invalid date'
+                            ? 'Odnotowano błąd: ' +
+                              vindicationItem.mailsLog.errorMsg +
+                              ' ' +
+                              (vindicationItem.mailsLog.errorDate
+                                | date : 'dd/MM/yyyy HH:mm')
+                            : ''
+                        "
+                        matTooltipPosition="right"
+                        [ngClass]="
+                          vindicationItem.mailsLog.errorDate != 'Invalid date'
+                            ? 'mailError'
+                            : ''
+                        "
+                        >report_problem</span
+                      >
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+          </ng-container>
+        </mat-list>
+      </div>
+    </mat-tab>
+    <mat-tab label="Historia zamówienia" class="matTabs">
+      <div class="whiteBoxContent">
+        <app-history-list
+          *ngIf="!historyListLoading"
+          [historyList]="orderHistory"
+          [order]="order"
+          (refreshList)="refreshHistoryList($event)"
+        ></app-history-list>
+        <div class="spinner_center" *ngIf="historyListLoading">
+          <mat-spinner></mat-spinner>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Szkolenie" class="matTabs">
+      <div class="whiteBoxContent" *ngIf="false">
+        <div class="tableHeadInfo">
+          <div class="couting">
+            <h2>Szczegóły</h2>
+          </div>
+          <div class="getFile">
+            <button
+              type="button"
+              mat-raised-button
+              color="primary"
+              matTooltip="Edytuj termin wydarzenia"
+              matTooltipPosition="below"
+              (click)="changeEvent()"
+            >
+              <span class="material-icons">edit</span> Edytuj
+            </button>
+            <!-- [routerLink]="['/training-dates', orderTrainingDate?.id, 'details']" -->
+          </div>
+        </div>
+        <mat-list>
+          <mat-list-item>
+            <span class="listItem">
+              <p>
+                <strong>Metoda szkolenia:</strong> {{ orderMethod?.name_pl }}
+              </p>
+            </span>
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <!-- <mat-list-item>
+            <span class="listItem">
+              <p>
+                <strong>Użyty kod rabatowy:</strong>
+                <ng-container *ngIf="discountDetails; else ifNoDiscount"
+                  >{{ discountDetails?.code_name }} (-{{
+                    discountDetails?.code_value
+                  }}<span
+                    *ngIf="
+                      discountDetails?.type == 'percent';
+                      else elseDiscount
+                    "
+                    >%</span
+                  >)</ng-container
+                ><ng-template #elseDiscount> PLN</ng-template>
+                <ng-template #ifNoDiscount> Brak</ng-template>
+              </p>
+            </span>
+          </mat-list-item>
+          <mat-divider></mat-divider> -->
+        </mat-list>
+      </div>
+      <div class="whiteBoxContent">
+        <div class="tableHeadInfo">
+          <div class="couting">
+            <h2>Dodatkowe informacje</h2>
+          </div>
+          <div class="getFile"></div>
+        </div>
+        <div class="clientComment">
+          <p *ngIf="order.participantInfo; else noClientComment">
+            {{ order.participantInfo }}
+          </p>
+          <!-- <textarea
+            [(ngModel)]=""
+            rows="5"
+            disabled
+          ></textarea> -->
+          <ng-template #noClientComment>
+            <p class="noClientComment">
+              Brak dodatkowych informacji od klienta
+            </p>
+          </ng-template>
+        </div>
+      </div>
+      <div class="whiteBoxContent">
+        <div class="tableHeadInfo">
+          <div class="couting">
+            <h2>Zgody marketingowe</h2>
+          </div>
+          <div class="getFile"></div>
+        </div>
+        <div class="regAccept">
+          <mat-checkbox
+            class="example-margin"
+            [(ngModel)]="order.reg1"
+            *ngIf="order?.reg1Content"
+            disabled
+          >
+            <span [innerHTML]="order?.reg1Content"></span>
+          </mat-checkbox>
+          <mat-checkbox
+            class="example-margin"
+            [(ngModel)]="order.reg2"
+            *ngIf="order?.reg2Content"
+            disabled
+          >
+            <span [innerHTML]="order?.reg2Content"></span>
+          </mat-checkbox>
+          <mat-checkbox
+            class="example-margin"
+            [(ngModel)]="order.reg3"
+            *ngIf="order?.reg3Content"
+            disabled
+          >
+            <span [innerHTML]="order?.reg3Content"></span>
+          </mat-checkbox>
+        </div>
+      </div>
+      <div class="whiteBoxContent">
+        <div class="tableHeadInfo">
+          <div class="couting">
+            <h2>Notatki wewnętrzne</h2>
+          </div>
+          <div class="getFile"></div>
+        </div>
+        <div class="notelist">
+          <ng-container *ngIf="orderNotes.length; else noNotes">
+            <div
+              class="noteBox"
+              *ngFor="
+                let note of orderNotes | slice : 0 : noteToShow;
+                let i = index
+              "
+              [ngClass]="{
+                noteComplete: note.is_task == '1' && note.task_done == '1'
+              }"
+            >
+              <div class="noteHead">
+                <p *ngIf="note.createdBy">
+                  {{ note.createdBy.first_name }} {{ note.createdBy.last_name }}
+                  <span>{{ calculateNoteDateDiff(note.created_at) }}</span>
+                </p>
+                <span
+                  class="material-icons"
+                  [matMenuTriggerFor]="noteItem"
+                  *ngIf="
+                    userData.id == note.createdby ||
+                    (userData.id != note.createdby &&
+                      note.is_task == 1 &&
+                      !note.task_done)
+                  "
+                  >more_horiz</span
+                >
+                <div class="taskInfo" *ngIf="note.is_task">
+                  <span *ngIf="note.task_done; else noDone">
+                    <span class="material-icons">done</span> Wykonane przez:
+                    {{ note.taskDoneBy.first_name }}
+                    {{ note.taskDoneBy.last_name }}
+                    {{ note.task_done_date | date : "dd.MM.yyyy HH:mm" }}
+                  </span>
+                  <ng-template #noDone>
+                    <span class="yellowLabel">Wymaga działania</span>
+                  </ng-template>
+                </div>
+              </div>
+              <mat-menu #noteItem="matMenu">
+                <button
+                  mat-menu-item
+                  (click)="editNoteIndex(i)"
+                  *ngIf="userData.id == note.createdby"
+                >
+                  <span>Edytuj</span>
+                </button>
+                <button
+                  mat-menu-item
+                  *ngIf="note.is_task == 0 && userData.id == note.createdby"
+                  (click)="noteIsaTask(note)"
+                >
+                  <span>Oznacz jako zadanie</span>
+                </button>
+                <button
+                  mat-menu-item
+                  *ngIf="note.is_task == 1 && !note.task_done"
+                  (click)="noteIsDone(note)"
+                >
+                  <span>Oznacz jako rozwiązane</span>
+                </button>
+                <button
+                  mat-menu-item
+                  (click)="deleteNote(note, i)"
+                  *ngIf="userData.id == note.createdby"
+                >
+                  <span>Usuń</span>
+                </button>
+              </mat-menu>
+              <div
+                class="noteContent"
+                *ngIf="!tabNoteToEdit[i]; else editThisnote"
+              >
+                <p>
+                  {{ note.note }}
+                </p>
+              </div>
+              <ng-template #editThisnote>
+                <div class="addNewNote">
+                  <textarea
+                    rows="5"
+                    placeholder="Wpisz treść..."
+                    [(ngModel)]="note.note"
+                  ></textarea>
+                  <mat-error *ngIf="noteError"> Pole wymagane</mat-error>
+                  <div class="btnGroup">
+                    <button
+                      mat-raised-button
+                      color="primary"
+                      (click)="editNote(note, i)"
+                    >
+                      Edytuj notetkę
+                    </button>
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+          </ng-container>
+
+          <ng-template #noNotes>
+            <p class="noNotes">Brak notatek wewnętrzych</p>
+          </ng-template>
+        </div>
+
+        <p
+          class="seeMoreNote"
+          *ngIf="orderNotes.length - noteToShow > 0"
+          (click)="seeMoreNotes()"
+        >
+          <span class="material-icons">expand_more</span> Zobacz pozostałe ({{
+            orderNotes.length - noteToShow
+          }})
+        </p>
+        <div class="addNewNote">
+          <textarea
+            rows="5"
+            placeholder="Treść nowej notatki"
+            [(ngModel)]="newNoteContent.note"
+          ></textarea>
+          <mat-error *ngIf="noteError"> Pole wymagane</mat-error>
+          <div class="btnGroup">
+            <mat-checkbox
+              class="example-margin"
+              [(ngModel)]="newNoteContent.is_task"
+            >
+              Wymaga działania
+            </mat-checkbox>
+            <button mat-raised-button color="primary" (click)="addNewNote()">
+              Zapisz notetkę
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+  <div class="spinner_center" *ngIf="orderLoading">
+    <mat-spinner></mat-spinner>
+  </div>
+</section>

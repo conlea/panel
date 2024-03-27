@@ -1,0 +1,92 @@
+<section class="section" id="contacts">
+  <div class="container-fluid">
+    <div class="eventOption">
+      <div class="dateEventSelect"></div>
+      <div>
+        <!-- [routerLink]="['edit']" -->
+        <div class="addEvent" (click)="addNewContact()">
+          <p>Dodaj kontakt <mat-icon>add_circle</mat-icon></p>
+        </div>
+        <div class="searchEvent">
+          <input
+            (keyup)="applyFilter($event.target.value)"
+            [(ngModel)]="searchPerson"
+            placeholder="Szukaj"
+          />
+          <mat-icon>search</mat-icon>
+        </div>
+        <div
+          class="refreshList"
+          matTooltip="Odśwież listę"
+          matTooltipPosition="left"
+          (click)="ngOnInit()"
+        >
+          <span class="material-icons">refresh</span>
+        </div>
+      </div>
+    </div>
+    <div class="listTraining" *ngIf="!contactLoading">
+      <mat-table mat-table [dataSource]="dataSource">
+        <!-- firstname Column -->
+        <ng-container matColumnDef="firstname">
+          <mat-header-cell *matHeaderCellDef> Imię </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.firstname }}
+            <a
+              fxFlexFill
+              [href]="
+                'https://app.hubspot.com/contacts/' +
+                HSId +
+                '/contact/' +
+                element.id
+              "
+              target="_blank"
+              matTooltip="Szczegóły kontaktu"
+              matTooltipPosition="bottom"
+              class="mat-row-link"
+            ></a>
+          </mat-cell>
+        </ng-container>
+        <!-- surname Column -->
+        <ng-container matColumnDef="lastname">
+          <mat-header-cell *matHeaderCellDef> Nazwisko </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.lastname }}
+          </mat-cell>
+        </ng-container>
+
+        <!-- company_name Company -->
+        <ng-container matColumnDef="company">
+          <mat-header-cell *matHeaderCellDef> Firma </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.company }} </mat-cell>
+        </ng-container>
+
+        <!-- position Email -->
+        <ng-container matColumnDef="email">
+          <mat-header-cell *matHeaderCellDef> Email </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <a href="mailto:{{ element.email }}">{{ element.email }}</a>
+          </mat-cell>
+        </ng-container>
+
+        <!-- position Email -->
+        <ng-container matColumnDef="phone">
+          <mat-header-cell *matHeaderCellDef> Telefon </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <a href="tel:{{ element.phone }}">{{ element.phone }}</a>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      </mat-table>
+      <mat-paginator
+        #paginatorListContact
+        [pageSizeOptions]="[25, 50, 100]"
+      ></mat-paginator>
+    </div>
+    <div class="spinner_center" *ngIf="contactLoading">
+      <mat-spinner></mat-spinner>
+    </div>
+  </div>
+</section>

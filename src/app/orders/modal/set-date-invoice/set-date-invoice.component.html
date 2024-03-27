@@ -1,0 +1,18 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{data.header}}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__content" mat-dialog-content>
+<mat-card class="demo-inline-calendar-card">
+  <!-- [firstDayOfWeek]="1" -->
+  <!-- [startAt]="selectedMonth" -->
+  <!-- [getFirstDayOfWeek]="1" -->
+  <mat-calendar [selected]="selectdate" [startAt]="selectedMonth" (selectedChange)="changeDate($event)"></mat-calendar>
+</mat-card>
+</div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <button mat-raised-button color="default" (click)="exitDialog()">Zamknij</button>
+  <button mat-raised-button color="primary" [disabled]="!selectdate" (click)="saveDate()">Zapisz</button>
+</div>

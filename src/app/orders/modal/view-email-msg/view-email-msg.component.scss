@@ -1,0 +1,69 @@
+::ng-deep .mailContent {
+  .mat-form-field-flex {
+    border: 1px solid #D6DCE4;
+    border-top: 0;
+    padding: 10px;
+  }
+
+  .mat-form-field-underline {
+    height: 0;
+  }
+
+  // .mat-form-field-infix {
+  //   border: 1px solid red;
+  // }
+}
+
+.modal__content {
+  input {
+    color: #313A4B;
+  }
+
+  &.vindicationMail {
+    .formField {
+      margin-bottom: 15px;
+
+      label {
+        font-size: 1.6rem;
+        color: #8997AB;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        background-color: transparent;
+        border: 1px solid #D6DCE4;
+        border-radius: 4px;
+        padding: 5px 8px;
+        font-size: 1.6rem;
+        color: #161C28;
+      }
+
+      .mailContent {
+        width: 100%;
+        background-color: transparent;
+        border: 1px solid #D6DCE4;
+        border-radius: 4px;
+        padding: 5px 8px;
+        font-size: 1.6rem;
+        color: #161C28;
+      }
+    }
+
+    // textarea {
+    //   padding: 0;
+    //   max-height: 0;
+    //   margin: 0;
+    // }
+  }
+
+  .mailContent {
+    .mat-form-field-flex {
+      border: 1px solid red;
+    }
+
+    .mat-form-field-infix {
+      border: 1px solid red;
+    }
+  }
+}

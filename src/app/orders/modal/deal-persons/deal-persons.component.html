@@ -1,0 +1,61 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{ data.header }}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__content" id="addPerson" mat-dialog-content>
+  <ng-container *ngIf="personsList.length > 0">
+    <mat-radio-group
+      aria-labelledby="example-radio-group-label"
+      class="example-radio-group"
+      ngDefaultControl
+      name="testRadio"
+      [(ngModel)]="idReportingPerson"
+    >
+      <div class="radioContent" *ngFor="let person of personsList">
+        <mat-radio-button
+          class="example-radio-button"
+          [value]="person.personHS_id"
+          (change)="radioChange($event.value)"
+        >
+          <span
+            >{{ person.firstName }} {{ person.lastName }} ({{
+              person.email
+            }})</span
+          >
+        </mat-radio-button>
+        <span class="userOption">
+          <span
+            class="userDelete"
+            *ngIf="idReportingPerson != person.personHS_id"
+            (click)="removePerson(person)"
+          >
+            <span class="material-icons"> delete </span>
+            Usuń
+          </span>
+          <mat-checkbox
+            class="example-margin"
+            [(ngModel)]="person.isParticipant"
+            [disabled]="idReportingPerson != person.personHS_id"
+            >Uczestnik</mat-checkbox
+          >
+        </span>
+      </div>
+    </mat-radio-group>
+  </ng-container>
+  <div>Your favorite season is: {{ idReportingPerson }}</div>
+</div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <button mat-raised-button color="default" (click)="exitDialog()">
+    Zamknij
+  </button>
+  <button
+    mat-raised-button
+    type="submit"
+    color="primary"
+    (click)="savePersons()"
+  >
+    Zapisz
+  </button>
+</div>

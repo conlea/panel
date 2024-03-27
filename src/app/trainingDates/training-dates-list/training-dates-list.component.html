@@ -1,0 +1,342 @@
+<section class="section" id="trainingDates">
+  <div class="container-fluid">
+    <div class="eventOption">
+      <div class="dateEventSelect">
+        <p>Zakres dat: </p>
+        <select class="form-select" aria-label="Default select example" [(ngModel)]="selectDate" (change)="changeSelectDate($event.target.value)">
+          <option value="">wszystkie <fa-icon [icon]="percentage"></fa-icon> </option>
+          <option value="1">dziś</option>
+          <option value="2">wczoraj</option>
+          <option value="3">w tym tygodniu</option>
+          <option value="4">w poprzednim tygodniu</option>
+          <option value="5">własny zakres</option>
+        </select>
+        <div class="dateContent" *ngIf="selectDate == '5'">
+          <mat-form-field>
+            <input matInput #dateStartref [matDatepicker]="dp1" [(ngModel)]="dateStart" disabled placeholder="Data od" (dateChange)="changeDateStart(dateStartref.value)">
+            <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+            <mat-datepicker #dp1 disabled="false"></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field>
+            <input matInput #dateEndref [matDatepicker]="dp2" [(ngModel)]="dateEnd" disabled placeholder="Data do" (dateChange)="changeDateStart(dateEndref.value)">
+            <mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
+            <mat-datepicker #dp2 disabled="false"></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+      <div>
+        <div class="addEvent" [routerLink]="['edit']">
+          <p>Dodaj wydarzenie <mat-icon>add_circle</mat-icon></p>
+        </div>
+        <div class="searchEvent">
+            <input (keyup)="applyFilter($event.target.value)" [(ngModel)]="searchTrainingDates" placeholder="Szukaj">
+            <mat-icon>search</mat-icon>
+        </div>
+      </div>
+    </div>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <a class="nav-link" [ngClass]="{ 'active':activeTab==='eventNow'}" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false" (click)="onTabChanged(0)">Bieżące</a>
+      <a class="nav-link" [ngClass]="{ 'active':activeTab==='eventOld'}" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false" (click)="onTabChanged(1)">Archiwalne</a>
+      <a class="nav-link" [ngClass]="{ 'active':activeTab==='eventAll'}" id="allEvent-tab" data-toggle="tab" href="#allEvent" role="tab" aria-controls="allEvent" aria-selected="true" (click)="onTabChanged(2)">Wszystkie</a>
+    </div>
+    <div class="tab-content" id="nav-tabContent">
+    <!-- bieżące -->
+      <div class="tab-pane fade" [ngClass]="{ 'show active':activeTab==='eventNow'}" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+        <ng-container *ngIf="!loadingActiveTraining; else activeSpinner">
+        <div class="filterList">
+          <div class="filterType">
+            <div class="filterBox" *ngFor="let filterType of registerType" (click)="filterTypeTraining(filterType.id)" [ngClass]="{'isSelected': filtredArray.includes(filterType.id) }">
+              <div class="count">
+                {{filterType.count}}
+              </div>
+              <div class="name">
+                {{filterType.name}}
+              </div>
+            </div>
+          </div>
+          <div class="setColumn" (click)="setColumns()">
+            <p>Dostosuj kolumny</p>
+          </div>
+        </div>
+        <div class="listTraining">
+          <mat-table [dataSource]="dataSourceActive" #matSortActive="matSort" matSort>
+            <!-- ID Column -->
+            <ng-container matColumnDef="idTermTraining">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-icon matTooltip="Kopiuj termin szkolenia" matTooltipPosition="right" [routerLink]="['details']" [queryParams]="{copy: element.id}">content_copy</mat-icon>
+                {{element.idTermTraining}}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="training">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Nazwa </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{element.training}}
+                <div class="publicIco" *ngIf="element.activeRegister == 1">
+                  <span>opublikowane</span>
+                  <mat-icon>visibility</mat-icon>
+                </div>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="trainingType">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Typ </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{element.eventTypeName}}
+                <a fxFlexFill  [routerLink]="[element.id, 'details']" class="mat-row-link"></a>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="dateStartEnd">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Termin </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.datestart | date: 'dd MMM'}} -
+                {{element.dateend | date: 'dd MMM yyyy'}}</mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="place">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Lokalizacja </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span [className]="element.placeRemote > 0 ? 'isRemote' : ''"> <mat-icon *ngIf="element.placeRemote > 0 ">home_work</mat-icon> {{element.place}}</span>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="lang">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Język </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.lang }}</mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="participants">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Uczestnicy </mat-header-cell>
+              <mat-cell *matCellDef="let element"> <span matTooltip="Maksymalna liczba osób" matTooltipPosition="left">{{element.maxPerson}}</span>&nbsp;(<span matTooltip="Osoby zarejestrowane" matTooltipPosition="right">{{element.countParticipants}}</span>) </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="status">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
+              <mat-cell *matCellDef="let element"> <span *ngIf="element.statusColor != ''; else noColor" [ngStyle]="{'background-color': element.statusColor.rgba, 'border-color': element.statusColor.rgba }">{{element.status}}</span> <ng-template #noColor>{{element.status}}</ng-template> </mat-cell>
+            </ng-container>
+            <!-- Actions -->
+            <ng-container matColumnDef="action" *ngIf="false">
+              <mat-header-cell *matHeaderCellDef></mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <a mat-raised-button color="primary" [href]="formLinkConlea + 'karta-zgloszenia/' + element.id"
+                  target="_blank" matTooltip="Formularz rejestracyjny" matTooltipPosition="left" *ngIf="element.activeRegister >
+                  0 && element.ticketCount > 0"><span class="material-icons">
+                    <fa-icon [icon]="wpforms"></fa-icon>
+                  </span></a>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+          <mat-paginator #paginatorListTrainingDatesActive [pageSizeOptions]="[25, 50, 100]"></mat-paginator>
+        </div>
+        </ng-container>
+        <ng-template #activeSpinner>
+          <div class="spinner_center">
+            <mat-spinner></mat-spinner>
+          </div>
+        </ng-template>
+      </div>
+      <!-- archiwum -->
+      <div class="tab-pane fade" [ngClass]="{ 'show active':activeTab==='eventOld'}" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+        <ng-container *ngIf="!loadingArchiveTraining; else activeSpinner">
+        <div class="filterList">
+          <div class="filterType">
+            <div class="filterBox" *ngFor="let filterType of registerType" (click)="filterTypeTraining(filterType.id)" [ngClass]="{'isSelected': filtredArray.includes(filterType.id) }">
+              <div class="count">
+                {{filterType.count}}
+              </div>
+              <div class="name">
+                {{filterType.name}}
+              </div>
+            </div>
+          </div>
+          <div class="setColumn" (click)="setColumns()">
+            <p>Dostosuj kolumny</p>
+          </div>
+        </div>
+        <div class="listTraining">
+          <mat-table [dataSource]="dataSourceArchive" #matSortArchive="matSort" matSort>
+            <!-- ID Column -->
+
+            <ng-container matColumnDef="idTermTraining">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-icon matTooltip="Kopiuj termin szkolenia" matTooltipPosition="right" [routerLink]="['details']" [queryParams]="{copy: element.id}">content_copy</mat-icon>
+                {{element.idTermTraining}}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="training">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Nazwa </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{element.training}}
+                <div class="publicIco" *ngIf="element.activeRegister == 1">
+                  <span>opublikowane</span>
+                  <mat-icon>visibility</mat-icon>
+                </div>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="trainingType">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Typ </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{element.eventTypeName}}
+                <a fxFlexFill  [routerLink]="[element.id, 'details']" class="mat-row-link"></a>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="dateStartEnd">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Termin </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.datestart | date: 'dd MMM'}} -
+                {{element.dateend | date: 'dd MMM yyyy'}}</mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="place">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Lokalizacja </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span [className]="element.placeRemote > 0 ? 'isRemote' : ''"> <mat-icon *ngIf="element.placeRemote > 0 ">home_work</mat-icon> {{element.place}}</span>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="lang">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Język </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.lang }}</mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="participants">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Uczestnicy </mat-header-cell>
+              <mat-cell *matCellDef="let element"> <span matTooltip="Maksymalna liczba osób" matTooltipPosition="left">{{element.maxPerson}}</span>&nbsp;(<span matTooltip="Osoby zarejestrowane" matTooltipPosition="right">{{element.countParticipants}}</span>) </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="status">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
+              <mat-cell *matCellDef="let element"> <span *ngIf="element.statusColor != ''; else noColor" [ngStyle]="{'background-color': element.statusColor.rgba, 'border-color': element.statusColor.rgba }">{{element.status}}</span> <ng-template #noColor>{{element.status}}</ng-template> </mat-cell>
+            </ng-container>
+            <!-- Actions -->
+            <ng-container matColumnDef="action" *ngIf="false">
+              <mat-header-cell *matHeaderCellDef></mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <a mat-raised-button color="primary" [href]="formLinkConlea + 'karta-zgloszenia/' + element.id"
+                  target="_blank" matTooltip="Formularz rejestracyjny" matTooltipPosition="left" *ngIf="element.activeRegister >
+                  0 && element.ticketCount > 0"><span class="material-icons">
+                    <fa-icon [icon]="wpforms"></fa-icon>
+                  </span></a>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+          <mat-paginator #paginatorListTrainingDatesArchive [pageSizeOptions]="[25, 50, 100]"></mat-paginator>
+        </div>
+        </ng-container>
+        <ng-template #activeSpinner>
+          <div class="spinner_center">
+            <mat-spinner></mat-spinner>
+          </div>
+        </ng-template>
+      </div>
+      <!-- wszystkie -->
+      <div class="tab-pane fade" [ngClass]="{ 'show active':activeTab==='eventAll'}" id="allEvent" role="tabpanel" aria-labelledby="allEvent-tab">
+        <ng-container *ngIf="!loadingAllTraining; else activeSpinner">
+        <div class="filterList">
+          <div class="filterType">
+            <div class="filterBox" *ngFor="let filterType of registerType" (click)="filterTypeTraining(filterType.id)" [ngClass]="{'isSelected': filtredArray.includes(filterType.id) }">
+              <div class="count">
+                {{filterType.count}}
+              </div>
+              <div class="name">
+                {{filterType.name}}
+              </div>
+            </div>
+          </div>
+          <div class="setColumn" (click)="setColumns()">
+            <p>Dostosuj kolumny</p>
+          </div>
+        </div>
+        <div class="listTraining">
+          <mat-table [dataSource]="dataSourceAll" #matSortAll="matSort" matSort>
+            <!-- ID Column -->
+
+            <ng-container matColumnDef="idTermTraining">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-icon matTooltip="Kopiuj termin szkolenia" matTooltipPosition="right" [routerLink]="['details']" [queryParams]="{copy: element.id}">content_copy</mat-icon>
+                {{element.idTermTraining}}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="training">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Nazwa </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{element.training}}
+                <div class="publicIco" *ngIf="element.activeRegister == 1">
+                  <span>opublikowane</span>
+                  <mat-icon>visibility</mat-icon>
+                </div>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="trainingType">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Typ </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{element.eventTypeName}}
+                <a fxFlexFill  [routerLink]="[element.id, 'details']" class="mat-row-link"></a>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="dateStartEnd">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Termin </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.datestart | date: 'dd MMM'}} -
+                {{element.dateend | date: 'dd MMM yyyy'}}</mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="place">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Lokalizacja </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span [className]="element.placeRemote > 0 ? 'isRemote' : ''"> <mat-icon *ngIf="element.placeRemote > 0 ">home_work</mat-icon> {{element.place}}</span>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="lang">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Język </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.lang }}</mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="participants">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Uczestnicy </mat-header-cell>
+              <mat-cell *matCellDef="let element"> <span matTooltip="Maksymalna liczba osób" matTooltipPosition="left">{{element.maxPerson}}</span>&nbsp;(<span matTooltip="Osoby zarejestrowane" matTooltipPosition="right">{{element.countParticipants}}</span>) </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="status">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
+              <mat-cell *matCellDef="let element"> <span *ngIf="element.statusColor != ''; else noColor" [ngStyle]="{'background-color': element.statusColor.rgba, 'border-color': element.statusColor.rgba }">{{element.status}}</span> <ng-template #noColor>{{element.status}}</ng-template> </mat-cell>
+            </ng-container>
+            <!-- Actions -->
+            <ng-container matColumnDef="action" *ngIf="false">
+              <mat-header-cell *matHeaderCellDef></mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <a mat-raised-button color="primary" [href]="formLinkConlea + 'karta-zgloszenia/' + element.id"
+                  target="_blank" matTooltip="Formularz rejestracyjny" matTooltipPosition="left" *ngIf="element.activeRegister >
+                  0 && element.ticketCount > 0"><span class="material-icons">
+                    <fa-icon [icon]="wpforms"></fa-icon>
+                  </span></a>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+          <mat-paginator #paginatorListTrainingDatesAll [pageSizeOptions]="[25, 50, 100]"></mat-paginator>
+        </div>
+        </ng-container>
+        <ng-template #activeSpinner>
+          <div class="spinner_center">
+            <mat-spinner></mat-spinner>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</section>

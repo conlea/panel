@@ -1,0 +1,1002 @@
+<section class="section" id="trainingDatesDetails">
+  <div class="trainingDateDetailsHead">
+    <a routerLink="/training-dates"><mat-icon>arrow_back</mat-icon> Cofnij</a>
+    <div class="groupBtn" *ngIf="!isLoading">
+      <a
+        *ngIf="
+          company && trainingDate.activeRegister > 0 && allTickets.length > 0
+        "
+        [href]="company.urlReg + idTrainingDate"
+        target="_blank"
+        ><mat-icon><span class="material-icons">reply</span></mat-icon> Otwórz
+        formularz {{ company.urlReg }}</a
+      >
+      <button
+        mat-raised-button
+        class="editBtn"
+        [routerLink]="'/training-dates/' + idTrainingDate + '/edit'"
+      >
+        <mat-icon><span class="material-icons">edit</span></mat-icon> Edytuj
+      </button>
+      <button
+        mat-raised-button
+        class="activeBtn"
+        (click)="activeForm(trainingDate.activeRegister)"
+      >
+        <ng-container
+          *ngIf="trainingDate.activeRegister == 1; else noactivForm"
+        >
+          <mat-icon class="material-icons-outlined">visibility_off</mat-icon>
+          Deaktywuj formularz rejestracji</ng-container
+        ><ng-template #noactivForm
+          ><mat-icon class="material-icons-outlined">visibility</mat-icon>
+          Aktywuj formularz rejestracji</ng-template
+        >
+      </button>
+    </div>
+  </div>
+  <div class="trainingDateDetailsInfo" *ngIf="!isLoading">
+    <div class="headInfo">
+      <div class="headTitle">
+        <h4>
+          ID terminu: <strong>{{ trainingDate.idTermTraining }}</strong>
+          <a href="#">Przejdź do listy zadań</a>
+        </h4>
+        <h2>{{ training.name_pl }}</h2>
+        <h3>
+          {{ place.name_pl }} /
+          {{ trainingDate.datestart | date : "dd.MM.yyyy" }}-{{
+            trainingDate.dateend | date : "dd.MM.yyyy"
+          }}
+          <strong
+            >status wydarzenia:
+            <span
+              [ngStyle]="{ 'background-color': '#' + status.color_status.hex }"
+              >{{ status.name_pl }}</span
+            ></strong
+          >
+        </h3>
+      </div>
+      <div class="headPerson">
+        <div class="person" *ngIf="salesOwner">
+          <div class="person__thumb">
+            <img src="../../../assets/img/userAvatar.png" alt="" />
+          </div>
+          <div class="person__name">
+            <h4>{{ salesOwner.first_name }} {{ salesOwner.last_name }}</h4>
+            <p>Sales owner</p>
+          </div>
+        </div>
+        <div class="person" *ngIf="eventOwner">
+          <div class="person__thumb">
+            <img src="../../../assets/img/userAvatar.png" alt="" />
+          </div>
+          <div class="person__name">
+            <h4>{{ eventOwner.first_name }} {{ eventOwner.last_name }}</h4>
+            <p>Event owner</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="contactInfo">
+      <div class="personContact" *ngIf="trainer">
+        <h5 *ngIf="trainingDate.trainer_confirmed">confirmed</h5>
+        <h4>Trener</h4>
+        <div class="person">
+          <div class="person__thumb">
+            <img [src]="trainer.thumb" alt="" />
+            <img
+              class="noImg"
+              src="../../../assets/img/userAvatar.png"
+              alt=""
+            />
+          </div>
+          <div class="person__name">
+            <p>{{ trainer.name }} {{ trainer.lastName }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="personContact" *ngIf="trainingDate.personContact_id">
+        <h5 *ngIf="trainingDate.personContact_confirmed">confirmed</h5>
+        <h4>Contact person</h4>
+        <div class="person">
+          <div class="person__thumb">
+            <ng-container
+              *ngIf="
+                trainingDate.contactPersonHS?.hs_avatar_filemanager_key?.value;
+                else noThumbImg
+              "
+            >
+              <img
+                [src]="
+                  'https://f.hubspotusercontent40.net/' +
+                  trainingDate.contactPersonHS?.hs_avatar_filemanager_key?.value
+                "
+                alt=""
+              />
+            </ng-container>
+            <ng-template #noThumbImg>
+              <img src="../../../assets/img/userAvatar.png" alt="" />
+            </ng-template>
+          </div>
+          <div class="person__name">
+            <a
+              [href]="
+                'https://app.hubspot.com/contacts/' +
+                HubSpotId +
+                '/contact/' +
+                trainingDate.personContact_id +
+                '/'
+              "
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <p>
+                {{ trainingDate.contactPersonHS?.firstname?.value }}
+                {{ trainingDate.contactPersonHS?.lastname?.value }}
+              </p>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="timeType">
+        <p *ngIf="trainingDate.timeStart">
+          Godziny:
+          <strong
+            >{{ trainingDate.timeStart }}-{{ trainingDate.timeEnd }}</strong
+          >
+        </p>
+        <p>
+          Typ: <strong>{{ method.name_pl }}</strong>
+        </p>
+        <p>
+          Metoda: <strong>{{ method.name_pl }}</strong>
+        </p>
+      </div>
+      <div class="timeType">
+        <p>
+          Język: <strong>{{ trainingDate.lang }}</strong>
+        </p>
+        <p>
+          Status: <strong>{{ status.name_pl }}</strong>
+        </p>
+        <p>
+          Rejestracja:
+          <strong
+            ><ng-container
+              *ngIf="trainingDate.short_register != 0; else elseRegister"
+              >Skrócona</ng-container
+            ><ng-template #elseRegister>Pełna</ng-template></strong
+          >
+        </p>
+      </div>
+    </div>
+    <div class="priceInfo">
+      <div class="priceBox">
+        <h5>Potwierdzony przychód</h5>
+        <h2>
+          {{ priceInfo.priceConfirm | currency : "" : "" }}<span>PLN</span>
+        </h2>
+        <div class="priceDetails">
+          <div class="priceDetBox">
+            <h5>Przychód do potwierdzenia</h5>
+            <h4>
+              {{ priceInfo.priceToConfirm | currency : "" : "" }}
+              <span>PLN</span>
+            </h4>
+          </div>
+          <div class="priceDetBox">
+            <h5>Przychód max</h5>
+            <h4>
+              {{ priceInfo.priceMax | currency : "" : "" }} <span>PLN</span>
+            </h4>
+          </div>
+        </div>
+      </div>
+      <div class="priceBox">
+        <h5>Potwierdzony koszt</h5>
+        <h2>{{ costConfirmed | currency : "" : "" }}<span>PLN</span></h2>
+        <div class="priceDetails">
+          <div class="priceDetBox">
+            <h5>Koszt do potwierdzenia</h5>
+            <h4>{{ costToConfirmed | currency : "" : "" }} <span>PLN</span></h4>
+          </div>
+          <div class="priceDetBox">
+            <h5>Marża</h5>
+            <div>
+              <h4>{{ profit | currency : "" : "" }} <span>PLN</span></h4>
+              <h4 *ngIf="profit > 0; else noProfitPrecent">
+                {{ profitPrecent }}%
+              </h4>
+              <ng-template #noProfitPrecent>
+                <h4 #noProfitPrecent>0%</h4>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="peopleEvent">
+        <div class="peopleBox confirm">
+          <div class="peopleBox__head">
+            <div class="icons">
+              <mat-icon class="material-icons-outlined small">done</mat-icon>
+              <mat-icon class="material-icons-outlined">people</mat-icon>
+            </div>
+            <h5>Potwierdzeni <br />uczestnicy</h5>
+          </div>
+          <div class="peopleBox__content">
+            <p>{{ personConfirm }}</p>
+          </div>
+        </div>
+        <div class="peopleBox saving">
+          <div class="peopleBox__head">
+            <div class="icons">
+              <mat-icon class="material-icons-outlined small"
+                >attach_money</mat-icon
+              >
+              <mat-icon class="material-icons-outlined">people</mat-icon>
+            </div>
+            <h5>Zapisani <br />uczestnicy</h5>
+          </div>
+          <div class="peopleBox__content">
+            <p>{{ personList.length }}</p>
+          </div>
+        </div>
+        <div class="peopleBox available">
+          <div class="peopleBox__head">
+            <div class="icons">
+              <mat-icon class="material-icons-outlined">people</mat-icon>
+            </div>
+            <h5>Liczba dostępnych <br />miejsc</h5>
+          </div>
+          <div class="peopleBox__content">
+            <p>{{ trainingDate.maxperson - personList.length }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spinner_center" *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+  </div>
+  <mat-tab-group dynamicHeight *ngIf="!isLoading">
+    <mat-tab label="Lista uczestników" class="matTabs">
+      <div class="example-small-box mat-elevation-z4">
+        <ng-container *ngIf="personList.length > 0; else noTable">
+          <div class="filterList">
+            <div class="filterType">
+              <div
+                class="filterBox"
+                *ngFor="let filterType of userTypeFilter"
+                (click)="filterTypeTraining(filterType.name)"
+                [ngClass]="{
+                  isSelected: filtredArray.includes(filterType.name)
+                }"
+              >
+                <div class="count">
+                  {{ filterType.count }}
+                </div>
+                <div class="name">
+                  {{ filterType.name }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tableHeadInfo">
+            <div class="couting"></div>
+            <div class="getFile">
+              <p (click)="setColumns()">
+                <mat-icon class="material-icons">tune</mat-icon> Dostosuj
+                kolumny
+              </p>
+              <p (click)="getFile('pdf')">
+                <mat-icon class="material-icons">file_download</mat-icon>
+                Pobierz PDF
+              </p>
+              <p (click)="getFile('csv')">
+                <mat-icon class="material-icons">file_download</mat-icon>
+                Pobierz CSV
+              </p>
+            </div>
+          </div>
+          <mat-table
+            #personListTable
+            class="personTable"
+            [dataSource]="personDataSource"
+            #matSortPerson="matSort"
+            matSort
+          >
+            <!-- firstname Column -->
+            <ng-container matColumnDef="name">
+              <mat-header-cell *matHeaderCellDef> Nazwa </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <p *ngIf="element.firstname; else noInHS">
+                  {{ element.firstname }} {{ element.lastname }}
+                </p>
+                <ng-template #noInHS>
+                  <p>Uczestnik został usunięty z bazy HS :(</p>
+                </ng-template>
+                <!-- <a fxFlexFill  [routerLink]="[element.id, 'details']" class="mat-row-link"></a> -->
+              </mat-cell>
+            </ng-container>
+            <!-- role Column -->
+            <ng-container matColumnDef="role">
+              <mat-header-cell *matHeaderCellDef> Rola </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <p
+                  *ngIf="element.participant_role.length > 0"
+                  class="userRoleList"
+                >
+                  <span
+                    *ngFor="let role of element.participantRole"
+                    [style.border-color]="'#' + role.color_status.hex"
+                    [style.color]="'#' + role.color_status.hex"
+                  >
+                    {{ role.name }}
+                  </span>
+                  <span class="material-icons" (click)="openRoleModal(element)">
+                    add
+                  </span>
+                </p>
+              </mat-cell>
+            </ng-container>
+            <!-- company Column -->
+            <ng-container matColumnDef="company">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Firma
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <p *ngIf="element.company">
+                  {{ element.company }}
+                </p>
+              </mat-cell>
+            </ng-container>
+            <!-- email Column -->
+            <ng-container matColumnDef="email">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Email
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <p *ngIf="element.email">
+                  {{ element.email }}
+                </p>
+              </mat-cell>
+            </ng-container>
+            <!-- phone Column -->
+            <ng-container matColumnDef="phone">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Telefon
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <p *ngIf="element.phone">
+                  {{ element.phone }}
+                </p>
+              </mat-cell>
+            </ng-container>
+            <!-- status Column -->
+            <ng-container matColumnDef="status">
+              <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <p *ngIf="element.orderID" class="statusStyle">
+                  <span
+                    [style.border-color]="'#' + element.statusColor.hex"
+                    [style.color]="'#' + element.statusColor.hex"
+                  >
+                    {{ element.status }}</span
+                  >
+                </p>
+              </mat-cell>
+            </ng-container>
+            <!-- order Column -->
+            <ng-container matColumnDef="order">
+              <mat-header-cell *matHeaderCellDef> Zamówienie </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <a
+                  [routerLink]="['/orders', element.order_id, 'details']"
+                  class="mat-row-link"
+                >
+                  {{ trainingDate.idTermTraining }}/{{ element.order_id }}
+                  <span class="material-icons">chevron_right</span>
+                </a>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="personColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: personColumns"></mat-row>
+          </mat-table>
+          <mat-paginator
+            #paginatorPersonList
+            [pageSizeOptions]="[10, 25, 50, 100]"
+          ></mat-paginator>
+        </ng-container>
+        <ng-template #noTable>
+          <div class="logBox" *ngIf="idTrainingDate > 0">
+            <h2>Brak osób zapisanych na to wydarzenie</h2>
+          </div>
+        </ng-template>
+      </div>
+    </mat-tab>
+    <mat-tab
+      label="Lista obecności"
+      class="matTabs"
+      *ngIf="showAvailablePersonList"
+    >
+      <div class="example-small-box mat-elevation-z4">
+        <ng-container *ngIf="personList.length > 0; else noTable">
+          <div class="tableHeadInfo">
+            <div class="couting"></div>
+            <div class="getFile">
+              <!-- <p (click)="setColumns()"><mat-icon class="material-icons">tune</mat-icon> Dostosuj kolumny</p> -->
+              <p (click)="getFileAvailablePerson('pdf')">
+                <mat-icon class="material-icons">file_download</mat-icon>
+                Pobierz PDF
+              </p>
+              <p (click)="getFileAvailablePerson('csv')">
+                <mat-icon class="material-icons">file_download</mat-icon>
+                Pobierz CSV
+              </p>
+            </div>
+          </div>
+          <mat-table
+            #availablePersonListTable
+            class="availablePersonTable"
+            [dataSource]="personDataSource"
+            #matSortPerson="matSort"
+            matSort
+          >
+            <!-- firstname Column -->
+            <ng-container matColumnDef="name">
+              <mat-header-cell *matHeaderCellDef> Uczestnik </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <p *ngIf="element.firstname; else noInHS">
+                  {{ element.firstname }} {{ element.lastname }}
+                </p>
+                <ng-template #noInHS>
+                  <p>Uczestnik został usunięty z bazy HS :(</p>
+                </ng-template>
+                <!-- <a fxFlexFill  [routerLink]="[element.id, 'details']" class="mat-row-link"></a> -->
+              </mat-cell>
+            </ng-container>
+            <ng-container
+              *ngFor="let day of availableDays"
+              [matColumnDef]="'day' + day"
+            >
+              <mat-header-cell *matHeaderCellDef>
+                Dzień {{ day }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-checkbox
+                  class="example-margin"
+                  (change)="availableEvent($event, element, day)"
+                  [checked]="element.isAvailable[day - 1]"
+                ></mat-checkbox>
+                <!-- <a fxFlexFill  [routerLink]="[element.id, 'details']" class="mat-row-link"></a> -->
+              </mat-cell>
+            </ng-container>
+            <mat-header-row
+              *matHeaderRowDef="availablePersonColumn"
+            ></mat-header-row>
+            <mat-row
+              *matRowDef="let row; columns: availablePersonColumn"
+            ></mat-row>
+          </mat-table>
+        </ng-container>
+        <ng-template #noTable>
+          <div class="logBox" *ngIf="idTrainingDate > 0">
+            <h2>Brak osób zapisanych na to wydarzenie</h2>
+          </div>
+        </ng-template>
+      </div>
+    </mat-tab>
+    <mat-tab label="Pakiety cenowe">
+      <div class="tabTicketHead">
+        <button type="button" (click)="addTicket()">
+          Dodaj pakiet cenowy
+          <mat-icon class="material-icons-outlined">add_circle</mat-icon>
+        </button>
+      </div>
+      <!-- tickets list -->
+      <ng-container *ngIf="!ticketsLoading">
+        <mat-table
+          #ticketListTable
+          cdkDropList
+          (cdkDropListDropped)="onListDrop($event)"
+          class="ticketTable"
+          [dataSource]="ticketDataSource"
+          matSort
+          *ngIf="allTickets.length > 0; else noTickets"
+        >
+          <!-- firstname Column -->
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef> Nazwa pakietu </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              {{ element.name_pl }}
+            </mat-cell>
+          </ng-container>
+          <!-- Data start Column -->
+          <ng-container matColumnDef="termValidity">
+            <mat-header-cell *matHeaderCellDef>
+              Data ważności kodu
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              {{ element.date_start | date : "dd MMM" }} -
+              {{ element.date_end | date : "dd MMM yyyy" }}
+            </mat-cell>
+          </ng-container>
+          <!-- Data start Column -->
+          <ng-container matColumnDef="price_PLN">
+            <mat-header-cell *matHeaderCellDef> Wartość PLN </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              {{ element.price_PLN | currency : "PLN" : true }}
+            </mat-cell>
+          </ng-container>
+          <!-- Data end ile razy użyto -->
+          <ng-container matColumnDef="isUse">
+            <mat-header-cell *matHeaderCellDef> Wykorzystano </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              {{ element.isUse }}
+            </mat-cell>
+          </ng-container>
+          <!-- Data end limit użyć -->
+          <ng-container matColumnDef="limit">
+            <mat-header-cell *matHeaderCellDef> Limit </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              {{ element.useLimit }}
+            </mat-cell>
+          </ng-container>
+          <!-- ile zostało -->
+          <ng-container matColumnDef="left">
+            <mat-header-cell *matHeaderCellDef> Zostało </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              {{ element.useLimit - element.isUse }}
+            </mat-cell>
+          </ng-container>
+          <!-- ile zostało -->
+          <ng-container matColumnDef="income">
+            <mat-header-cell *matHeaderCellDef>
+              podsumowanie przychodu
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              {{ element.isUse * element.price_PLN | currency : "PLN" : true }}
+            </mat-cell>
+          </ng-container>
+          <!-- Data end action -->
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <div
+                class="clickEventList"
+                (click)="editTicket(element.id)"
+              ></div>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="ticketColumns"></mat-header-row>
+          <mat-row
+            cdkDrag
+            [cdkDragData]="row"
+            *matRowDef="let row; columns: ticketColumns"
+          ></mat-row>
+        </mat-table>
+        <ng-template #noTickets>
+          <h4 class="text-center"><strong>Brak pakietów cenowych</strong></h4>
+        </ng-template>
+      </ng-container>
+      <div class="spinner_center" *ngIf="ticketsLoading">
+        <mat-spinner></mat-spinner>
+      </div>
+    </mat-tab>
+    <mat-tab label="Kody rabatowe">
+      <div class="tabTicketHead">
+        <button type="button" (click)="addDiscountCode()">
+          Dodaj kod rabatowy
+          <mat-icon class="material-icons-outlined">add_circle</mat-icon>
+        </button>
+      </div>
+      <mat-table
+        class="ticketTable"
+        [dataSource]="discountDataSource"
+        matSort
+        *ngIf="discountCode.length > 0; else noDiscountCode"
+      >
+        <!-- firstname Column -->
+        <ng-container matColumnDef="codeName">
+          <mat-header-cell *matHeaderCellDef> Nazwa kodu </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.code_name }}
+          </mat-cell>
+        </ng-container>
+        <!-- term Column -->
+        <ng-container matColumnDef="term">
+          <mat-header-cell *matHeaderCellDef>
+            Data ważności kodu
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.date_start | date : "dd MMM" }} -
+            {{ element.date_end | date : "dd MMM yyyy" }}
+          </mat-cell>
+        </ng-container>
+        <!-- codetype Column -->
+        <!-- <ng-container matColumnDef="codetype">
+          <mat-header-cell *matHeaderCellDef> Typ kodu </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{element.type}}
+          </mat-cell>
+        </ng-container> -->
+        <!-- value Column -->
+        <ng-container matColumnDef="value">
+          <mat-header-cell *matHeaderCellDef> Wartość </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <ng-container *ngIf="element.type == 'amount'">
+              -{{ element.code_value | currency : "PLN" }}
+            </ng-container>
+            <ng-container *ngIf="element.type == 'percent'">
+              {{ element.code_value }}%
+            </ng-container>
+          </mat-cell>
+        </ng-container>
+        <!-- isUse Column -->
+        <ng-container matColumnDef="isUse">
+          <mat-header-cell *matHeaderCellDef> Wykorzystano </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.isUse }}
+          </mat-cell>
+        </ng-container>
+        <!-- limit Column -->
+        <ng-container matColumnDef="limit">
+          <mat-header-cell *matHeaderCellDef> Limit </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.useLimit }}
+          </mat-cell>
+        </ng-container>
+        <!-- left Column -->
+        <ng-container matColumnDef="left">
+          <mat-header-cell *matHeaderCellDef> Zostało </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.useLimit - element.isUse }}
+          </mat-cell>
+        </ng-container>
+        <!-- left Column -->
+        <ng-container matColumnDef="income">
+          <mat-header-cell *matHeaderCellDef> Kwota rabatu </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <ng-container *ngIf="element.type == 'amount'">
+              {{ element.code_value * element.isUse | currency : "PLN" }}
+            </ng-container>
+            <ng-container *ngIf="element.type == 'percent'">
+              {{ 0 | currency : "PLN" : true }}
+            </ng-container>
+          </mat-cell>
+        </ng-container>
+        <!-- left Column -->
+        <ng-container matColumnDef="action">
+          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <div
+              class="clickEventList"
+              (click)="editDiscountCode(element)"
+            ></div>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="discountColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: discountColumns"></mat-row>
+      </mat-table>
+      <ng-template #noDiscountCode>
+        <h4 class="text-center"><strong>Brak kodów rabatowych</strong></h4>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Mail grupowy">
+      <div class="mailTabContent">
+        <div class="spinner_center absolute" *ngIf="isLoadingMessage">
+          <mat-spinner></mat-spinner>
+        </div>
+        <form
+          [formGroup]="formOptions"
+          (ngSubmit)="sendMail(formDirective)"
+          #formDirective="ngForm"
+        >
+          <mat-form-field>
+            <mat-select
+              formControlName="sendFrom"
+              placeholder="Wiadomość wyślij od:"
+            >
+              <mat-option *ngFor="let user of userList" [value]="user.email"
+                >{{ user.first_name }} {{ user.last_name }}</mat-option
+              >
+            </mat-select>
+            <mat-error *ngIf="formOptions.controls['sendFrom'].errors?.required"
+              >Pole wymagane</mat-error
+            >
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Wyślij wiadomość do:</mat-label>
+            <mat-select formControlName="sendTo" multiple>
+              <mat-option
+                *ngFor="let person of personList"
+                [value]="person.email"
+                >{{ person.firstname }} {{ person.lastname }}</mat-option
+              >
+            </mat-select>
+            <mat-error *ngIf="formOptions.controls['sendTo'].errors?.required"
+              >Pole wymagane</mat-error
+            >
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Tytuł wiadomości</mat-label>
+            <input matInput formControlName="mailSubject" />
+            <mat-error
+              *ngIf="formOptions.controls['mailSubject'].errors?.required"
+              >Pole wymagane</mat-error
+            >
+          </mat-form-field>
+          <ckeditor
+            [config]="ckeConfig"
+            [editor]="Editor"
+            formControlName="mailText"
+          ></ckeditor>
+          <button mat-raised-button type="submit" color="primary">
+            Wyślij
+          </button>
+          <!-- <button mat-raised-button type="button" color="primary" (click)="resetForm()">reset</button> -->
+        </form>
+      </div>
+    </mat-tab>
+    <mat-tab label="Lista zamówień">
+      <mat-table
+        class="orderTable"
+        [dataSource]="orderDataSource"
+        matSort
+        *ngIf="orderList.length > 0; else noOrder"
+      >
+        <!-- firstname Column -->
+        <ng-container matColumnDef="orderName">
+          <mat-header-cell *matHeaderCellDef> Nr zamówienia </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ trainingDate.idTermTraining }}/{{ element.id }}
+          </mat-cell>
+        </ng-container>
+        <!-- Data start Column -->
+        <ng-container matColumnDef="reportPerson">
+          <mat-header-cell *matHeaderCellDef> Os. zamawiająca </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.reportingPerson?.firstname }}
+            {{ element.reportingPerson?.lastname }}
+          </mat-cell>
+        </ng-container>
+        <!-- Data start Column -->
+        <ng-container matColumnDef="company">
+          <mat-header-cell *matHeaderCellDef> Firma </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.companyName }}
+          </mat-cell>
+        </ng-container>
+        <!-- Data end ile razy użyto -->
+        <ng-container matColumnDef="invoice">
+          <mat-header-cell *matHeaderCellDef> Nr Faktury </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <span
+              *ngIf="element.invoice[0]"
+              [ngClass]="{
+                isPay:
+                  element.orderPayUStatus == 'CONFIRMED' ||
+                  element.orderPayUStatus == 'COMPLETED',
+                noPay:
+                  (element.invoice[0].payment_to | date : 'yyyyMMdd') <
+                  (dateNow | date : 'yyyyMMdd')
+              }"
+              >{{ element.invoice[0].number }}</span
+            >
+          </mat-cell>
+        </ng-container>
+        <!-- Data end limit użyć -->
+        <ng-container matColumnDef="price">
+          <mat-header-cell *matHeaderCellDef>
+            Kwota zamówienia
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.totalPrice | currency : "PLN" }}
+          </mat-cell>
+        </ng-container>
+        <!-- ile zostało -->
+        <ng-container matColumnDef="orderStatus">
+          <mat-header-cell *matHeaderCellDef>
+            Status zamówienia
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <span
+              [style.border-color]="'#' + element.status.color_status.hex"
+              [style.color]="'#' + element.status.color_status.hex"
+              >{{ element.status.name }}</span
+            >
+          </mat-cell>
+        </ng-container>
+        <!-- Data end action -->
+        <ng-container matColumnDef="action">
+          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <a
+              class="clickEventList"
+              [routerLink]="['/orders', element.id, 'details']"
+            ></a>
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="orderColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: orderColumns"></mat-row>
+      </mat-table>
+      <mat-paginator
+        #paginatorOrderList
+        [pageSizeOptions]="[10, 25, 50, 100]"
+      ></mat-paginator>
+      <ng-template #noOrder>
+        <div class="logBox">
+          <h2>Brak zamówień</h2>
+        </div>
+        <h4 class="text-center"><strong></strong></h4>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Lista kosztów">
+      <ng-container *ngIf="!isCostsLoading">
+        <div class="tabTicketHead">
+          <!-- <button type="button"
+              (click)="addCost()">Dodaj koszt wydarzenia <mat-icon class="material-icons-outlined">add_circle</mat-icon></button> -->
+          <button type="button" [matMenuTriggerFor]="invoicePositionsItem">
+            Dodaj koszt wydarzenia
+            <mat-icon class="material-icons-outlined">more_vert</mat-icon>
+          </button>
+          <mat-menu #invoicePositionsItem="matMenu">
+            <button mat-menu-item (click)="addCostManual()">
+              <mat-icon>add</mat-icon>
+              <span>Dodaj Ręcznie</span>
+            </button>
+            <button mat-menu-item (click)="addCostByID()">
+              <mat-icon>input</mat-icon>
+              <span>Dodaj po ID z fakturownii</span>
+            </button>
+            <button mat-menu-item (click)="addCostAll()">
+              <mat-icon>file_download</mat-icon>
+              <span>Pobierz wszystkie z Fakturownii</span>
+            </button>
+          </mat-menu>
+        </div>
+        <mat-table
+          class="costsTable"
+          [dataSource]="costsDataSource"
+          *ngIf="costsList.length > 0; else noCosts"
+        >
+          <!-- firstname Column -->
+          <ng-container matColumnDef="cost_number">
+            <mat-header-cell *matHeaderCellDef> Numer faktury </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <a
+                *ngIf="element.cost_id; else noFvCost"
+                [href]="element.view_url"
+                target="_blank"
+                >{{ element.cost_number }}</a
+              >
+              <ng-template #noFvCost>-----</ng-template>
+            </mat-cell>
+          </ng-container>
+          <!-- firstname Column -->
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef> Nazwa </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              {{ element.cost_name }}
+            </mat-cell>
+          </ng-container>
+          <!-- firstname Column -->
+          <ng-container matColumnDef="price">
+            <mat-header-cell *matHeaderCellDef> Cena </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              {{ element.cost_price | currency : "" : "" }}
+            </mat-cell>
+          </ng-container>
+          <!-- firstname Column -->
+          <ng-container matColumnDef="confirmed">
+            <mat-header-cell *matHeaderCellDef>
+              Koszt potwierdzony
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <mat-checkbox
+                class="example-margin"
+                [checked]="element.isConfirmed"
+                disabled
+              ></mat-checkbox>
+            </mat-cell>
+          </ng-container>
+          <!-- firstname Column -->
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <span [matMenuTriggerFor]="menuCost">
+                <mat-icon class="material-icons-outlined">more_vert</mat-icon>
+              </span>
+              <mat-menu #menuCost="matMenu">
+                <button mat-menu-item (click)="removeCost(element)">
+                  <mat-icon>deleted</mat-icon>
+                  <span>Usuń</span>
+                </button>
+                <button
+                  mat-menu-item
+                  (click)="editCost(element)"
+                  *ngIf="!element.cost_id"
+                >
+                  <mat-icon>edit</mat-icon>
+                  <span>Edytuj koszt</span>
+                </button>
+                <!-- <button mat-menu-item (click)="addCostAll()">
+                    <mat-icon>file_download</mat-icon>
+                    <span>Pobierz wszystkie z Fakturowni</span>
+                  </button> -->
+              </mat-menu>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="costsColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: costsColumns"></mat-row>
+        </mat-table>
+        <ng-template #noCosts>
+          <div class="logBox">
+            <h2>Brak kosztów</h2>
+          </div>
+          <h4 class="text-center"><strong></strong></h4>
+        </ng-template>
+      </ng-container>
+      <div class="spinner_center" *ngIf="isCostsLoading">
+        <mat-spinner></mat-spinner>
+      </div>
+    </mat-tab>
+    <mat-tab label="Lista osób zainteresowanych" *ngIf="false"> </mat-tab>
+    <mat-tab label="Notatki">
+      <ng-container *ngIf="!isCommentLoading">
+        <div class="tabTicketHead">
+          <button type="button" (click)="addComment()">
+            Dodaj notatkę
+            <mat-icon class="material-icons-outlined">add_circle</mat-icon>
+          </button>
+        </div>
+        <div class="comment__list">
+          <div class="comment__box" *ngFor="let comment of commentList">
+            <div class="comment__author">
+              <div class="person">
+                <div class="thumb">
+                  <img src="./../assets/img/userAvatar.png" alt="user" />
+                </div>
+                <div class="name">
+                  <h4>
+                    {{ comment.userCreate.first_name }}
+                    {{ comment.userCreate.last_name }}
+                  </h4>
+                </div>
+              </div>
+              <div class="editComment" *ngIf="userData.id == comment.user_id">
+                <button mat-icon-button [matMenuTriggerFor]="invoiceMenu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #invoiceMenu="matMenu">
+                  <button mat-menu-item (click)="editComment(comment)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Edytuj</span>
+                  </button>
+                  <button mat-menu-item (click)="deleteComment(comment)">
+                    <mat-icon>delete_outline</mat-icon>
+                    <span>Usuń</span>
+                  </button>
+                </mat-menu>
+              </div>
+            </div>
+            <div class="comment__content" [innerHTML]="comment.comment"></div>
+          </div>
+        </div>
+      </ng-container>
+      <div class="spinner_center" *ngIf="isCommentLoading">
+        <mat-spinner></mat-spinner>
+      </div>
+    </mat-tab>
+    <mat-tab label="Historia wydarzenia">
+      <div class="example-small-box mat-elevation-z4">
+        <app-history-list
+          [historyList]="trainingDateHistory"
+          [trainingDate]="trainingDate"
+        ></app-history-list>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</section>

@@ -1,0 +1,70 @@
+@mixin section {
+  float: left;
+  width: 100%;
+  position: relative;
+}
+
+@mixin placeholder {
+  &::-webkit-input-placeholder {
+    @content;
+  }
+
+  &::-moz-placeholder {
+    @content;
+  }
+
+  &:-ms-input-placeholder {
+    @content;
+  }
+
+  &:-moz-placeholder {
+    @content;
+  }
+}
+
+// Mixin pozwalajacy ustawienie 'color' i 'background' zaznaczonego tekstu
+@mixin selection {
+  &::-moz-selection {
+    @content;
+  }
+
+  &::selection {
+    @content;
+  }
+}
+
+@mixin lg {
+  @media #{$min-md} {
+    @content;
+  }
+}
+
+@mixin md {
+  @media #{$max-md} {
+    @media #{$min-sm} {
+      @content;
+    }
+  }
+}
+
+@mixin sm {
+  @media #{$max-sm} {
+    @media #{$min-xs} {
+      @content;
+    }
+  }
+}
+
+@mixin xs {
+  @media #{$max-xs} {
+    @media #{$min-xx} {
+      @content;
+    }
+  }
+}
+
+@mixin xx {
+  @media #{$max-xx} {
+    @content;
+  }
+}

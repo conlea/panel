@@ -1,0 +1,43 @@
+#companySettings {
+  .editTrainingDates {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+
+    &>div {
+      margin: 0 5px;
+
+      button,
+      a {
+        margin: 0 5px;
+      }
+
+      fa-icon {
+        font-size: 24px;
+      }
+    }
+  }
+
+  .ckeditorContent {
+    .ckeditorBox {
+      margin: 0 0 15px;
+
+      p {
+        font-size: 1.4rem;
+        margin-bottom: 5px;
+      }
+    }
+  }
+}
+
+.ckeditorPlaceholders {
+  margin: 20px 0;
+
+  h4 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 10px 0 5px 0;
+  }
+
+}

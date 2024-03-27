@@ -1,0 +1,234 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{ data.header }}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__content addDiscount" mat-dialog-content>
+  <form
+    [formGroup]="formOptions"
+    (ngSubmit)="addNewDiscount()"
+    #formDirective="ngForm"
+  >
+    <div class="row">
+      <div class="col-12 col-sm-12 col-md-12">
+        <mat-form-field>
+          <input
+            matInput
+            type="text"
+            name="Kod rabatowy"
+            formControlName="code_name"
+            placeholder="Kod rabatowy"
+          />
+          <mat-error *ngIf="formOptions.controls['code_name'].errors?.required">
+            Pole wymagane</mat-error
+          >
+          <mat-error
+            *ngIf="formOptions.controls['code_name'].errors?.maxlength"
+          >
+            Nazwa kodu nie może przekroczyć 25 znaków
+          </mat-error>
+          <mat-error *ngIf="formOptions.controls['code_name'].errors?.pattern">
+            <p>
+              Nazwa kodu nie może posiadać spacji oraz innych znaków
+              =<>;:,.?/|\*śćążź idp
+            </p>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6">
+        <mat-form-field>
+          <mat-select
+            formControlName="type"
+            placeholder="Typ rabatu"
+            (selectionChange)="changeType($event)"
+          >
+            <mat-option value="percent"> Procentowy </mat-option>
+            <mat-option value="amount"> Całkowity </mat-option>
+          </mat-select>
+          <mat-error *ngIf="formOptions.controls['type'].errors?.required">
+            Pole wymagane</mat-error
+          >
+        </mat-form-field>
+        <mat-form-field>
+          <input
+            matInput
+            type="number"
+            name="Wartość"
+            formControlName="code_value"
+            placeholder="Wartość"
+          />
+          <mat-error
+            *ngIf="formOptions.controls['code_value'].errors?.required"
+          >
+            Pole wymagane</mat-error
+          >
+          <mat-error *ngIf="formOptions.controls['code_value'].errors?.max">
+            Wartość nie może przekroczyć 100</mat-error
+          >
+          <mat-error *ngIf="formOptions.controls['code_value'].errors?.min">
+            Wartość musi być większa niż 0</mat-error
+          >
+        </mat-form-field>
+        <mat-form-field>
+          <input
+            matInput
+            type="number"
+            name="Limit użyć"
+            formControlName="useLimit"
+            placeholder="Limit użyć"
+          />
+          <mat-error *ngIf="formOptions.controls['useLimit'].errors?.required">
+            Pole wymagane</mat-error
+          >
+          <mat-error *ngIf="formOptions.controls['useLimit'].errors?.min">
+            Wartość musi być większa niż 0</mat-error
+          >
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6">
+        <mat-form-field appearance="fill">
+          <mat-label>Ważny od</mat-label>
+          <input
+            matInput
+            [matDatepicker]="dp1"
+            name="Ważny od"
+            disabled
+            formControlName="date_start"
+          />
+          <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+          <mat-datepicker #dp1 disabled="false"></mat-datepicker>
+          <mat-error
+            *ngIf="formOptions.controls['date_start'].errors?.required"
+          >
+            Pole wymagane</mat-error
+          >
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Ważny do</mat-label>
+          <input
+            matInput
+            [matDatepicker]="dp2"
+            name="Ważny do"
+            disabled
+            formControlName="date_end"
+          />
+          <mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
+          <mat-datepicker #dp2 disabled="false"></mat-datepicker>
+          <mat-error *ngIf="formOptions.controls['date_end'].errors?.required">
+            Pole wymagane</mat-error
+          >
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-sm-12 col-md-12">
+        <mat-form-field>
+          <mat-select formControlName="product" placeholder="Dla produktu">
+            <mat-option value="training"> Wydarzenie </mat-option>
+            <mat-option value="exam"> Egzamin </mat-option>
+            <mat-option value="book"> Materiały szkoleniowe </mat-option>
+          </mat-select>
+          <mat-error *ngIf="formOptions.controls['product'].errors?.required">
+            Pole wymagane</mat-error
+          >
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select
+            formControlName="trainingDate_id"
+            placeholder="Dla terminu szkolenia"
+            (selectionChange)="changeTrainingDate($event)"
+          >
+            <mat-option value="">--</mat-option>
+            <mat-option
+              *ngFor="let trainingActive of trainingDateActive"
+              [value]="trainingActive.id"
+            >
+              {{ trainingActive.training.kod }} -
+              {{ trainingActive.training.name_pl }} ({{
+                trainingActive.datestart | date : "dd/MM"
+              }}
+              - {{ trainingActive.dateend | date : "dd/MM/yyyy" }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select
+            formControlName="training_id"
+            placeholder="Dla szkolenia"
+            (selectionChange)="changeTrainingDate($event)"
+          >
+            <mat-option value="">--</mat-option>
+            <mat-option
+              *ngFor="let training of trainingList"
+              [value]="training.id"
+            >
+              {{ training.kod }} - {{ training.name_pl }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select
+            formControlName="place_id"
+            placeholder="Dla miejscowości"
+            (selectionChange)="changeTrainingDate($event)"
+          >
+            <mat-option value="">--</mat-option>
+            <mat-option *ngFor="let place of places" [value]="place.id">
+              {{ place.name_pl }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-checkbox color="primary" formControlName="active"
+          >Kod rabatowy aktywny</mat-checkbox
+        >
+      </div>
+      <div class="spinner_center" *ngIf="isDiscountLoading">
+        <mat-spinner></mat-spinner>
+      </div>
+    </div>
+    <div class="editLast">
+      <p *ngIf="discountData.userEdit">
+        Edytowane przez: {{ discountData.userEdit?.first_name }}
+        {{ discountData.userEdit?.last_name }}
+        {{ discountData.updated_at | date : "dd-MM-yyyy HH:mm" }}
+      </p>
+      <p *ngIf="discountData.userCreate">
+        Dodane przez: {{ discountData.userCreate?.first_name }}
+        {{ discountData.userCreate?.last_name }}
+        {{ discountData.created_at | date : "dd-MM-yyyy HH:mm" }}
+      </p>
+    </div>
+  </form>
+</div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <!-- <button mat-raised-button type="button" *ngIf="discountData.id && !data.copy" (click)="removeTicket()"
+    color="warn">Usuń</button> -->
+  <button
+    mat-raised-button
+    color="warn"
+    *ngIf="discountData.id && !data.copy"
+    (click)="removeDiscount()"
+  >
+    Usuń
+  </button>
+  <button mat-raised-button color="default" (click)="exitDialog()">
+    Zamknij
+  </button>
+  <button
+    mat-raised-button
+    type="submit"
+    *ngIf="!discountData.id || data.copy"
+    (click)="formDirective.ngSubmit.emit()"
+    color="primary"
+  >
+    Dodaj
+  </button>
+  <button
+    mat-raised-button
+    type="submit"
+    *ngIf="discountData.id && !data.copy"
+    (click)="editDiscount()"
+    color="primary"
+  >
+    Zapisz
+  </button>
+</div>

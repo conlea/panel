@@ -1,0 +1,183 @@
+<section class="section" id="trainerEdit">
+  <div class="container">
+    <h2 *ngIf="trainer_id > 0">
+      Edytuj dane trenera: {{ trainer?.name }} {{ trainer?.lastName }}
+    </h2>
+    <h2 *ngIf="trainer_id == 0">Dodaj nowego trenera</h2>
+    <div class="white_block editTrainer">
+      <button mat-raised-button color="primary" routerLink="/trainers">
+        <mat-icon>keyboard_arrow_left</mat-icon> Wstecz
+      </button>
+      <div>
+        <button
+          type="button"
+          mat-raised-button
+          color="warn"
+          *ngIf="trainer_id > 0 && trainer?.active > 0"
+          (click)="removeTrainer(trainer_id)"
+          matTooltip="Usuń metode szkoleń"
+          matTooltipPosition="below"
+        >
+          <span class="material-icons">delete_forever</span>
+        </button>
+        <button
+          type="submit"
+          form="ngForm"
+          mat-raised-button
+          color="primary"
+          matTooltip="Zapisz zmiany"
+          matTooltipPosition="below"
+        >
+          <span class="material-icons">save</span>
+        </button>
+      </div>
+    </div>
+    <div class="white_block">
+      <form
+        id="ngForm"
+        [formGroup]="formOptions"
+        (ngSubmit)="saveTrainer(formDirective)"
+        #formDirective="ngForm"
+        *ngIf="!trainerLoading"
+      >
+        <div class="row">
+          <div class="col-12 col-sm-12 col-md-4">
+            <div class="fileContainer" *ngIf="!trainer.thumb">
+              <input
+                type="file"
+                accept="image/png, image/gif, image/jpeg"
+                (change)="getFile($event)"
+                class="file"
+              />
+              <span>
+                <mat-icon>upload_file</mat-icon>
+                Dodaj zdjęcie
+              </span>
+            </div>
+            <div class="trainerThumb" *ngIf="trainer.thumb">
+              <img [src]="trainer.thumb" alt="" />
+              <img
+                class="noImg"
+                src="./../../../assets/img/noImg.jpg"
+                alt="noImg"
+              />
+            </div>
+            <p class="removeBtn" (click)="removeThumb()" *ngIf="trainer.thumb">
+              <mat-icon>close</mat-icon> usuń zdjęcie
+            </p>
+          </div>
+          <div class="col-12 col-sm-12 col-md-8">
+            <mat-form-field>
+              <input
+                matInput
+                type="text"
+                formControlName="name"
+                placeholder="Imię"
+              />
+              <mat-error *ngIf="formOptions.controls['name'].errors?.required">
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <mat-form-field>
+              <input
+                matInput
+                type="text"
+                formControlName="lastName"
+                placeholder="Nazwisko"
+              />
+              <mat-error
+                *ngIf="formOptions.controls['lastName'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <mat-form-field>
+              <input
+                matInput
+                type="number"
+                formControlName="phone"
+                placeholder="Telefon"
+              />
+              <mat-error *ngIf="formOptions.controls['phone'].errors?.required">
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <!-- <mat-form-field>
+              <input
+                matInput
+                type="text"
+                formControlName="position"
+                placeholder="Stanowisko"
+              />
+              <mat-error
+                *ngIf="formOptions.controls['position'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field> -->
+            <mat-form-field>
+              <textarea
+                matInput
+                formControlName="bio_pl"
+                placeholder="Bio pl"
+                cdkTextareaAutosize
+                cdkAutosizeMinRows="4"
+                cdkAutosizeMaxRows="5"
+              ></textarea>
+              <mat-error
+                *ngIf="formOptions.controls['bio_pl'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <mat-form-field>
+              <textarea
+                matInput
+                formControlName="bio_en"
+                placeholder="Bio en"
+                cdkTextareaAutosize
+                cdkAutosizeMinRows="4"
+                cdkAutosizeMaxRows="5"
+              ></textarea>
+              <mat-error
+                *ngIf="formOptions.controls['bio_en'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Szkolenia</mat-label>
+              <mat-select formControlName="trainings_id" multiple>
+                <mat-option
+                  *ngFor="let training of trainingList"
+                  [value]="training.id"
+                  >{{ training.name_pl }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+              <input
+                matInput
+                type="text"
+                formControlName="linkedin"
+                placeholder="Link do linkedin"
+              />
+              <mat-error
+                *ngIf="formOptions.controls['linkedin'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+          </div>
+        </div>
+      </form>
+
+      <div class="spinner_center fixed" *ngIf="fileUpload">
+        <mat-spinner></mat-spinner>
+      </div>
+      <div class="spinner_center" *ngIf="trainerLoading">
+        <mat-spinner></mat-spinner>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,72 @@
+$color-primary: #451356;
+
+#login_page {
+  padding: 10rem 0;
+
+  h3 {
+    color: $color-primary;
+    font-size: 3rem;
+    line-height: 4rem;
+    width: 100%;
+    font-weight: 700;
+    margin: 0;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  img {
+    width: 60%;
+    position: absolute;
+    top: -5%;
+    transform: translate(-50%, 0%);
+    left: 50%;
+    z-index: 5;
+    animation-name: imgTop;
+    animation-timing-function: ease;
+    animation-delay: 1s;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+  }
+
+  form {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    box-shadow: 0 0 10px 3px rgba(0, 0, 0, .3);
+    background-color: #fff;
+    position: relative;
+    z-index: 10;
+
+
+    mat-form-field {
+      width: 100%;
+      // margin: 5px 0;
+      font-size: 1.6rem;
+    }
+
+    button {}
+  }
+
+  .spinner_center {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+@keyframes imgTop {
+  from {
+    top: 0;
+    transform: translate(-50%, 0%);
+  }
+
+  to {
+    top: -5%;
+    transform: translate(-50%, -100%);
+  }
+}

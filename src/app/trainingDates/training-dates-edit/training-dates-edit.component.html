@@ -1,0 +1,514 @@
+<section class="section" id="trainingDatesDetails">
+  <div class="container">
+    <h2 *ngIf="idTrainingDate > 0">
+      Edytuj termin wydarzenia:
+      {{ trainingDateDetail.trainingDetails?.name_pl }} ({{
+        trainingDateDetail.datestart | date: "dd.MM.yyyy"
+      }}
+      - {{ trainingDateDetail.dateend | date: "dd.MM.yyyy" }})
+    </h2>
+    <h2 *ngIf="idTrainingDate == 0">Dodaj termin szkolenia</h2>
+    <div class="white_block editTrainingDates">
+      <button
+        mat-raised-button
+        color="primary"
+        routerLink="/training-dates"
+        *ngIf="!idTrainingDate"
+      >
+        <mat-icon>keyboard_arrow_left</mat-icon> Wstecz
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        [routerLink]="['/training-dates', idTrainingDate, 'details']"
+        *ngIf="idTrainingDate"
+      >
+        <mat-icon>keyboard_arrow_left</mat-icon> Wstecz
+      </button>
+      <div>
+        <!-- <a mat-raised-button color="primary" [href]="formLink + idTrainingDate" target="_blank"
+          *ngIf="idTrainingDate > 0 && trainingDateDetail.active > 0" matTooltip="Formularz rejestracyjny"
+          matTooltipPosition="below">
+          <fa-icon [icon]="wpforms"></fa-icon>
+        </a> -->
+        <button
+          type="button"
+          mat-raised-button
+          color="warn"
+          (click)="removeDataTraining(idTrainingDate)"
+          matTooltip="Usuń zamówienie"
+          matTooltipPosition="below"
+          *ngIf="idTrainingDate > 0 && trainingDateDetail.active > 0"
+        >
+          <span class="material-icons">delete_forever</span>
+        </button>
+        <button
+          type="submit"
+          form="ngForm"
+          mat-raised-button
+          color="primary"
+          matTooltip="Zapisz zmiany"
+          matTooltipPosition="below"
+          *ngIf="trainingDateDetail.active > 0"
+        >
+          <span class="material-icons">save</span>
+        </button>
+        <button
+          type="button"
+          mat-raised-button
+          color="primary"
+          (click)="ngOnInit()"
+          *ngIf="idTrainingDate > 0"
+        >
+          <span class="material-icons">refresh</span>
+        </button>
+      </div>
+    </div>
+    <div
+      class="white_block"
+      [className]="
+        trainingDateDetail.userEdit || trainingDateDetail.userCreate
+          ? 'editInfo'
+          : ''
+      "
+    >
+      <h4 *ngIf="trainingDateDetail.active == 0">
+        <strong>Termin zgłoszenia został usunięty</strong>
+      </h4>
+      <form
+        id="ngForm"
+        [formGroup]="formOptions"
+        (ngSubmit)="updateTrainingDate(formDirective)"
+        #formDirective="ngForm"
+        *ngIf="!isTrainingDateLoading"
+      >
+        <div class="row">
+          <div class="col-12">
+            <mat-form-field>
+              <input
+                matInput
+                type="text"
+                placeholder="Produkt"
+                aria-label="Number"
+                matInput
+                formControlName="product_id"
+                [matAutocomplete]="selectTraining"
+              />
+              <mat-autocomplete
+                autoActiveFirstOption
+                #selectTraining="matAutocomplete"
+                (optionSelected)="getDefaultTicketTraining($event.option.value)"
+              >
+                <mat-option
+                  *ngFor="let training of filteredOptions | async"
+                  [disabled]="training.status == 'ARCHIVED' ? 'disabled' : null"
+                  [value]="training.name_pl"
+                >
+                  {{ training.kod }} - {{ training.name_pl }}
+                </mat-option>
+              </mat-autocomplete>
+
+              <mat-error
+                *ngIf="formOptions.controls['product_id'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6">
+            <mat-form-field>
+              <mat-select
+                formControlName="event_type"
+                placeholder="Rodzaj wydarzenia"
+                (selectionChange)="changeEventType($event)"
+              >
+                <mat-option
+                  *ngFor="let eventT of allEventTypes"
+                  [disabled]="eventT.active == 0 ? 'disabled' : null"
+                  [value]="eventT.id"
+                  >{{ eventT.name_pl }}</mat-option
+                >
+              </mat-select>
+              <mat-error
+                *ngIf="formOptions.controls['event_type'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <mat-form-field *ngIf="formDirective.form.value.event_type == 2">
+              <input
+                matInput
+                type="text"
+                formControlName="contactPerson"
+                placeholder="Osoba do kontaktu"
+                (input)="onSearchChange($event.target.value)"
+                [matAutocomplete]="autoCompletePerson"
+              />
+              <mat-autocomplete
+                autoActiveFirstOption
+                #autoCompletePerson="matAutocomplete"
+              >
+                <mat-option
+                  *ngFor="let option of filteredContactOptions"
+                  [value]="
+                    option.properties.firstname?.value +
+                    ' ' +
+                    option.properties.lastname?.value
+                  "
+                  (onSelectionChange)="onEnter(option['vid'])"
+                >
+                  {{ option.properties.firstname?.value }}
+                  {{ option.properties.lastname?.value }} (email:
+                  {{ option.properties.email?.value }})
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error
+                *ngIf="formOptions.controls['contactPerson'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+              <mat-error
+                *ngIf="formOptions.controls['contactPerson'].errors?.minlength"
+              >
+                Minimum 4 znaki</mat-error
+              >
+            </mat-form-field>
+            <mat-checkbox
+              color="primary"
+              *ngIf="formDirective.form.value.event_type == 2"
+              formControlName="personContact_confirmed"
+              >Czy osoba do kontaktu jest potwierdzona</mat-checkbox
+            >
+            <mat-form-field>
+              <mat-select
+                formControlName="company_id"
+                placeholder="Firma organizująca wydarzenie"
+                (selectionChange)="changeCompany($event)"
+              >
+                <mat-option
+                  *ngFor="let company of allCompanies"
+                  [disabled]="company.active == 0 ? 'disabled' : null"
+                  [value]="company.id"
+                  >{{ company.name }}</mat-option
+                >
+              </mat-select>
+              <mat-error
+                *ngIf="formOptions.controls['company_id'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <mat-form-field>
+              <mat-select
+                formControlName="regulation_id"
+                placeholder="Regulamin"
+              >
+                <mat-option
+                  *ngFor="let regulation of regulationsList"
+                  [disabled]="regulation.active == 0 ? 'disabled' : null"
+                  [value]="regulation.id"
+                  >{{ regulation.name }}</mat-option
+                >
+              </mat-select>
+              <mat-error
+                *ngIf="formOptions.controls['regulation_id'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <mat-form-field>
+              <mat-select
+                formControlName="status_id"
+                placeholder="Status wydarzenia"
+              >
+                <mat-option
+                  *ngFor="let status of allStatuses"
+                  [disabled]="status.active == 0 ? 'disabled' : null"
+                  [value]="status.id"
+                  >{{ status.name_pl }}</mat-option
+                >
+              </mat-select>
+              <mat-error
+                *ngIf="formOptions.controls['status_id'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-select
+                formControlName="place_id"
+                placeholder="Miejsce wydarzenia"
+              >
+                <mat-option
+                  *ngFor="let place of allPlaces"
+                  [disabled]="place.active == 0 ? 'disabled' : null"
+                  [value]="place.id"
+                  >{{ place.name_pl }}</mat-option
+                >
+              </mat-select>
+              <mat-error
+                *ngIf="formOptions.controls['place_id'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <mat-form-field>
+              <mat-select formControlName="metoda_id" placeholder="Metoda">
+                <mat-option
+                  *ngFor="let method of allMethods"
+                  [disabled]="method.active == 0 ? 'disabled' : null"
+                  [value]="method.id"
+                  >{{ method.name_pl }}</mat-option
+                >
+              </mat-select>
+              <mat-error
+                *ngIf="formOptions.controls['metoda_id'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <mat-form-field>
+              <input
+                matInput
+                type="number"
+                formControlName="maxPerson"
+                placeholder="Maksymalna liczba miejsc (soft limit)"
+              />
+              <mat-error
+                *ngIf="formOptions.controls['maxPerson'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <mat-form-field>
+              <mat-select
+                formControlName="currency"
+                placeholder="Waluta"
+                multiple
+              >
+                <mat-option
+                  *ngFor="let currency of allCurrency"
+                  [disabled]="currency.active == 0 ? 'disabled' : null"
+                  [value]="currency.name"
+                  >{{ currency.name }}</mat-option
+                >
+              </mat-select>
+              <mat-error
+                *ngIf="formOptions.controls['currency'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+
+            <mat-checkbox color="primary" formControlName="short_register"
+              >skrócona rejestracja</mat-checkbox
+            >
+            <mat-checkbox color="primary" formControlName="activeRegister"
+              >rejestracja aktywna</mat-checkbox
+            >
+          </div>
+          <div class="col-12 col-sm-12 col-md-6">
+            <mat-form-field>
+              <input
+                matInput
+                type="text"
+                formControlName="idTermTraining"
+                placeholder="ID terminu wydarzenia"
+                disabled="disabled"
+              />
+              <mat-error
+                *ngIf="formOptions.controls['idTermTraining'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <mat-form-field>
+              <mat-select formControlName="trainer_id" placeholder="Trener">
+                <mat-option>--</mat-option>
+                <mat-option
+                  *ngFor="let trainer of trainers"
+                  [disabled]="trainer.active == 0 ? 'disabled' : null"
+                  [value]="trainer.id"
+                  >{{ trainer.name }} {{ trainer.lastName }}</mat-option
+                >
+              </mat-select>
+              <mat-error
+                *ngIf="formOptions.controls['trainer_id'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <mat-checkbox
+              color="primary"
+              *ngIf="formDirective.form.value.trainer_id != ''"
+              formControlName="trainer_confirmed"
+              >Trener potwierdzony</mat-checkbox
+            >
+
+            <mat-form-field>
+              <mat-select
+                formControlName="salesOwner_id"
+                placeholder="Sales owner"
+              >
+                <mat-option>--</mat-option>
+                <mat-option
+                  *ngFor="let user of usersPanel"
+                  [disabled]="user.active == 0 ? 'disabled' : null"
+                  [value]="user.id"
+                  >{{ user.first_name }} {{ user.last_name }}</mat-option
+                >
+              </mat-select>
+              <mat-error
+                *ngIf="formOptions.controls['salesOwner_id'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <mat-form-field>
+              <mat-select
+                formControlName="eventOwner_id"
+                placeholder="Event owner"
+              >
+                <mat-option>--</mat-option>
+                <mat-option
+                  *ngFor="let user of usersPanel"
+                  [disabled]="user.active == 0 ? 'disabled' : null"
+                  [value]="user.id"
+                  >{{ user.first_name }} {{ user.last_name }}</mat-option
+                >
+              </mat-select>
+              <mat-error
+                *ngIf="formOptions.controls['eventOwner_id'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <mat-form-field>
+              <mat-select
+                formControlName="lang"
+                placeholder="Język prowadzonego wydarzenia"
+              >
+                <mat-option
+                  *ngFor="let lang of allLangs"
+                  [disabled]="lang.active == 0 ? 'disabled' : null"
+                  [value]="lang.short_name"
+                  >{{ lang.name_pl }}</mat-option
+                >
+              </mat-select>
+              <mat-error *ngIf="formOptions.controls['lang'].errors?.required">
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <mat-form-field>
+              <input
+                matInput
+                [matDatepicker]="dp1"
+                formControlName="datestart"
+                disabled
+                placeholder="Data od"
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="dp1"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #dp1 disabled="false"></mat-datepicker>
+              <mat-error
+                *ngIf="formOptions.controls['datestart'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <mat-form-field>
+              <input
+                matInput
+                [matDatepicker]="dp2"
+                formControlName="dateend"
+                disabled
+                placeholder="Data do"
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="dp2"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #dp2 disabled="false"></mat-datepicker>
+              <mat-error
+                *ngIf="formOptions.controls['dateend'].errors?.required"
+              >
+                Pole wymagane</mat-error
+              >
+            </mat-form-field>
+            <mat-form-field>
+              <input
+                matInput
+                [ngxTimepicker]="fullTimeStart"
+                formControlName="timeStart"
+                [format]="24"
+                readonly
+                placeholder="Wydarzenie w godzinach od"
+              />
+              <ngx-material-timepicker
+                #fullTimeStart
+                [theme]="darkTheme"
+              ></ngx-material-timepicker>
+              <button
+                mat-button
+                *ngIf="formOptions.get('timeStart').value"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="formOptions.controls['timeStart'].setValue('')"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+            <mat-form-field>
+              <input
+                matInput
+                [ngxTimepicker]="fullTimeEnd"
+                formControlName="timeEnd"
+                [format]="24"
+                readonly
+                placeholder="Wydarzenie w godzinach do"
+              />
+              <ngx-material-timepicker
+                #fullTimeEnd
+                [theme]="darkTheme"
+              ></ngx-material-timepicker>
+              <button
+                mat-button
+                *ngIf="formOptions.get('timeEnd').value"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="formOptions.controls['timeEnd'].setValue('')"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-sm-12 col-md-12"></div>
+        </div>
+      </form>
+      <div class="spinner_center" *ngIf="isTrainingDateLoading">
+        <mat-spinner></mat-spinner>
+      </div>
+    </div>
+  </div>
+  <div
+    class="logBox"
+    *ngIf="trainingDateDetail.userEdit || trainingDateDetail.userCreate"
+  >
+    <h2>Log</h2>
+    <p *ngIf="trainingDateDetail.userEdit">
+      Edytowane przez: {{ trainingDateDetail.userEdit?.first_name }}
+      {{ trainingDateDetail.userEdit?.last_name }}
+      {{ trainingDateDetail.updated_at | date: "dd-MM-yyyy HH:mm" }}
+    </p>
+    <p *ngIf="trainingDateDetail.userCreate">
+      Dodane przez: {{ trainingDateDetail.userCreate?.first_name }}
+      {{ trainingDateDetail.userCreate?.last_name }}
+      {{ trainingDateDetail.created_at | date: "dd-MM-yyyy HH:mm" }}
+    </p>
+  </div>
+</section>

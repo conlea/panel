@@ -1,0 +1,15 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{data.header}}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__content" mat-dialog-content>
+  <div class="checkboxContent">
+    <mat-checkbox class="example-margin" [(ngModel)]="invoiceFV">Dodatkowo usuń z fakturowni</mat-checkbox>
+  </div>
+</div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <button mat-raised-button color="default" (click)="exitDialog()">Zamknij</button>
+  <button mat-raised-button color="warn" (click)="remove()">Usuń</button>
+</div>

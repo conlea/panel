@@ -1,0 +1,185 @@
+html,
+// reset bootstrap font size
+body {
+  font-size: initial;
+}
+
+html {
+  @include lg {
+    font-size: 10px !important;
+  }
+
+  @include md {
+    font-size: 9.5px !important;
+  }
+
+  @include sm {
+    font-size: 9px !important;
+  }
+
+  @include xs {
+    font-size: 8.5px !important;
+  }
+
+  @include xx {
+    font-size: 8px !important;
+  }
+}
+
+.section {
+  @include section;
+}
+
+#page_wrapper {
+  background-color: #fff;
+  min-height: 100vh;
+  font-family: $font-primary;
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: $color-text;
+  display: -ms-flexbox; //dzieki temu stopka jest przyklejona do dolu
+  display: flex;
+  min-height: 100vh;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  overflow: hidden;
+
+  a {
+    color: inherit !important;
+  }
+
+  @media #{$min-xs} {
+    position: relative;
+  }
+
+
+  a[color=primary] {
+    color: #fff !important;
+    text-decoration: none;
+  }
+}
+
+#page_main {
+
+  .section {
+    width: 100%;
+    float: left;
+    padding: 20px 0;
+    overflow-x: auto;
+    overflow: hidden;
+  }
+
+  button {
+    mat-icon {
+      font-size: 1.8rem;
+      line-height: 1.8rem;
+      width: 18px;
+      height: 18px;
+      vertical-align: middle;
+    }
+
+    &.mat-primary {
+      color: #fff;
+    }
+
+    &.mat-icon-button {
+      .mat-button-wrapper {
+        margin: 0;
+      }
+
+      &[color=primary] {
+        mat-icon {
+          color: #545a68;
+        }
+      }
+
+      &[color=default] {
+        mat-icon {
+          color: #545a68;
+        }
+      }
+
+      &[color=warn] {
+        mat-icon {
+          color: #f96868;
+        }
+      }
+    }
+  }
+
+  button {
+    &[color=red] {
+      color: #fff;
+      background-color: red;
+    }
+
+    &[color=green] {
+      color: #fff;
+      background-color: #46be8a;
+    }
+
+    &[color=default] {
+      color: #fff;
+      background-color: #588fc8;
+    }
+  }
+
+  button {
+    mat-icon {
+      font-size: 1.8rem;
+      line-height: 1.8rem;
+      width: 18px;
+      height: 18px;
+      vertical-align: middle;
+    }
+
+    &.mat-primary {
+      color: #fff;
+    }
+
+    &.mat-icon-button {
+      .mat-button-wrapper {
+        margin: 0;
+      }
+
+      &[color=primary] {
+        mat-icon {
+          color: #545a68;
+        }
+      }
+
+      &[color=default] {
+        mat-icon {
+          color: #545a68;
+        }
+      }
+
+      &[color=warn] {
+        mat-icon {
+          color: #f96868;
+        }
+      }
+    }
+  }
+
+  a[color=primary] {
+    color: #fff !important;
+    text-decoration: none;
+  }
+}
+
+#toast-container {
+  margin-top: 20px;
+  font-family: $font-primary;
+
+  .toast-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .toast-message {
+    font-size: 1.2rem;
+    font-weight: 300;
+  }
+}

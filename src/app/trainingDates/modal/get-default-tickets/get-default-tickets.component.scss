@@ -1,0 +1,48 @@
+.setDefaultTickets {
+  h3 {
+    font-weight: 700;
+    margin: 0;
+  }
+  p {
+    font-size: 1.6rem;
+    line-height: 2.4rem;
+    margin: 0;
+    strong {
+      font-weight: 700;
+    }
+    span {
+      margin-left: 8px;
+      vertical-align: middle;
+      cursor: pointer;
+      mat-icon {
+        font-size: 1.6rem;
+      }
+    }
+  }
+  .defaultTicket {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    &__name {
+    }
+    &__date {
+      margin: 0 15px;
+      max-width: 250px;
+    }
+    &__remove {
+      strong {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+      }
+    }
+  }
+  hr {
+    width: 100%;
+    margin: 0 15px 15px;
+    &:last-child {
+      display: none;
+    }
+  }
+}

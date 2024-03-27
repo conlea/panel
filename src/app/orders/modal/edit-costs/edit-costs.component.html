@@ -1,0 +1,150 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{ data.header }}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__content" mat-dialog-content>
+  <form
+    [formGroup]="formOptions"
+    (ngSubmit)="editCosts()"
+    #formDirective="ngForm"
+  >
+    <mat-form-field style="width: 100%">
+      <mat-select
+        formControlName="idDiscountCode"
+        placeholder="Kod rabatowy"
+        (ngModelChange)="priceChanged()"
+      >
+        <mat-option value="">-</mat-option>
+        <mat-option
+          *ngFor="let discountCode of availableDoscountCode"
+          [value]="discountCode.id"
+          >{{ discountCode.code_name }} (-{{ discountCode.code_value }}
+          <ng-container *ngIf="discountCode.type == 'percent'">%</ng-container
+          >)</mat-option
+        >
+      </mat-select>
+      <mat-error *ngIf="formOptions.controls['idDiscountCode'].errors?.required"
+        >Pole wymagane</mat-error
+      >
+    </mat-form-field>
+    <mat-form-field style="width: 100%">
+      <mat-select
+        formControlName="noNameTickets"
+        placeholder="Dodaj bilety bezimienne"
+        (ngModelChange)="priceChanged()"
+      >
+        <mat-option
+          *ngFor="let count of ['', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+          [value]="count"
+          >{{ count }}</mat-option
+        >
+      </mat-select>
+      <mat-error *ngIf="formOptions.controls['noNameTickets'].errors?.required"
+        >Pole wymagane</mat-error
+      >
+    </mat-form-field>
+    <ng-container *ngIf="training.is_exam_available">
+      <mat-checkbox
+        formControlName="take_exam"
+        (change)="priceChanged()"
+        [disabled]="training.is_exam_required"
+        >Zamawiam egzamin
+        <span *ngIf="training.is_exam_required">
+          (Egzamin wymagany)</span
+        ></mat-checkbox
+      >
+      <mat-form-field>
+        <input
+          matInput
+          type="number"
+          formControlName="priceExam"
+          placeholder="Cena egzaminu"
+          (input)="priceChanged()"
+        />
+        <mat-error *ngIf="formOptions.controls['priceExam'].errors?.required">
+          Pole wymagane</mat-error
+        >
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="training.is_book_available">
+      <mat-checkbox
+        formControlName="take_book"
+        (change)="priceChanged()"
+        [disabled]="training.is_book_required"
+        >Zamawiam materiały szkoleniowe
+        <span *ngIf="training.is_book_required">
+          (Materiały szkoleniowe wymagane)</span
+        ></mat-checkbox
+      >
+      <mat-form-field>
+        <input
+          matInput
+          type="number"
+          formControlName="price_book"
+          placeholder="Cena materiałów szkoleniowych"
+          (input)="priceChanged()"
+        />
+        <mat-error *ngIf="formOptions.controls['price_book'].errors?.required">
+          Pole wymagane</mat-error
+        >
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="training.is_Take2_available">
+      <mat-checkbox formControlName="take_take2" (change)="priceChanged()">
+        Zamawiam Take2</mat-checkbox
+      >
+      <mat-form-field>
+        <input
+          matInput
+          type="number"
+          formControlName="price_Take2_exam"
+          placeholder="Cena Take2 re-sit"
+          (input)="priceChanged()"
+        />
+        <mat-error
+          *ngIf="formOptions.controls['price_Take2_exam'].errors?.required"
+        >
+          Pole wymagane</mat-error
+        >
+      </mat-form-field>
+    </ng-container>
+    <mat-form-field>
+      <input
+        matInput
+        type="number"
+        formControlName="priceTraining"
+        placeholder="Cena biletu na wydarzenie"
+        (input)="priceChanged()"
+      />
+      <mat-error *ngIf="formOptions.controls['priceTraining'].errors?.required">
+        Pole wymagane</mat-error
+      >
+    </mat-form-field>
+    <mat-form-field>
+      <input
+        matInput
+        type="number"
+        formControlName="totalPrice"
+        placeholder="Cena całego zamówienia"
+      />
+      <mat-error *ngIf="formOptions.controls['totalPrice'].errors?.required">
+        Pole wymagane</mat-error
+      >
+    </mat-form-field>
+  </form>
+</div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <button mat-raised-button color="default" (click)="exitDialog()">
+    Zamknij
+  </button>
+  <button
+    mat-raised-button
+    type="submit"
+    (click)="formDirective.ngSubmit.emit()"
+    color="primary"
+  >
+    Zapisz
+  </button>
+</div>

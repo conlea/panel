@@ -1,0 +1,60 @@
+.historyTable {
+  padding: 0;
+  background: transparent;
+
+  .mat-row {
+    position: relative;
+    padding: 5px 0;
+    min-height: 30px;
+    transition: all 0.3s ease;
+    .mat-cell {
+      font-size: 1.4rem;
+    }
+
+    &:hover {
+      background-color: #f1f5f8;
+    }
+  }
+  .mat-header-row {
+    min-height: 45px;
+    .mat-header-cell {
+      font-weight: 600;
+      color: #8997ab;
+      font-size: 1.4rem;
+    }
+  }
+
+  .boxMailEvent {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-left: 15px;
+
+    span {
+      color: #a7aab2;
+      margin: 0 5px;
+
+      &.mailSuccess {
+        color: #36a776;
+      }
+
+      &.mailError {
+        color: red;
+      }
+    }
+  }
+
+  .mat-column-name {
+    width: 100%;
+    u {
+      cursor: pointer;
+    }
+  }
+  .mat-column-user {
+    justify-content: flex-end;
+    max-width: 380px;
+  }
+}
+.mat-paginator {
+  background: transparent;
+}

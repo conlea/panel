@@ -1,0 +1,20 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{data.header}}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__content" mat-dialog-content>
+  <form [formGroup]="formOptions" (ngSubmit)="saveDate()" #formDirective="ngForm">
+    <mat-form-field>
+      <input matInput type="email" formControlName="newEmail" placeholder="Adres email">
+      <mat-error *ngIf="formOptions.controls['newEmail'].errors?.email"> Błędny adres email</mat-error>
+      <mat-error *ngIf="formOptions.controls['newEmail'].errors?.required"> Pole wymagane</mat-error>
+    </mat-form-field>
+  </form>
+</div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <button mat-raised-button color="default" (click)="exitDialog()">Zamknij</button>
+  <button mat-raised-button color="primary" [disabled]="!this.formOptions.valid" (click)="saveDate()">Zapisz</button>
+</div>
+

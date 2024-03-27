@@ -1,0 +1,72 @@
+<section class="section" id="places">
+  <div class="container-fluid">
+    <div class="eventOption">
+      <div class="dateEventSelect"></div>
+      <div>
+        <div class="addEvent" [routerLink]="['details']">
+          <p>Dodaj lokalizacje <mat-icon>add_circle</mat-icon></p>
+        </div>
+        <div class="searchEvent">
+          <input
+            (keyup)="applyFilter($event.target.value)"
+            [(ngModel)]="searchPlace"
+            placeholder="Szukaj"
+          />
+          <mat-icon>search</mat-icon>
+        </div>
+        <div
+          class="refreshList"
+          matTooltip="Odśwież listę"
+          matTooltipPosition="left"
+          (click)="ngOnInit()"
+        >
+          <span class="material-icons">refresh</span>
+        </div>
+      </div>
+    </div>
+    <div class="listTraining" *ngIf="!placeLoading">
+      <mat-table [dataSource]="dataSource">
+        <!-- firstname nazwa miejscowości pl -->
+        <ng-container matColumnDef="namePL">
+          <mat-header-cell *matHeaderCellDef> Nazwa PL </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.name_pl }}
+            <a
+              fxFlexFill
+              [routerLink]="[element.id, 'details']"
+              class="mat-row-link"
+            ></a>
+          </mat-cell>
+        </ng-container>
+        <!-- firstname  nazwa miejscowości en -->
+        <ng-container matColumnDef="nameEN">
+          <mat-header-cell *matHeaderCellDef> Nazwa EN </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.name_en }} </mat-cell>
+        </ng-container>
+        <!-- firstname Kraj -->
+        <ng-container matColumnDef="country">
+          <mat-header-cell *matHeaderCellDef> Kraj </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.country_en }}
+          </mat-cell>
+        </ng-container>
+        <!-- firstname Zdalne -->
+        <ng-container matColumnDef="remote">
+          <mat-header-cell *matHeaderCellDef> Zdalnie </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <mat-checkbox [checked]="element.remote" disabled></mat-checkbox>
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      </mat-table>
+      <mat-paginator
+        #paginatorListPlaces
+        [pageSizeOptions]="[10, 25, 50]"
+      ></mat-paginator>
+    </div>
+    <div class="spinner_center" *ngIf="placeLoading">
+      <mat-spinner></mat-spinner>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,23 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{data.header}}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__content" id="addPerson" mat-dialog-content>
+  <form [formGroup]="formOptions" (ngSubmit)="addCost()" #formDirective="ngForm">
+    <mat-form-field class="example-full-width">
+      <input type="text" placeholder="Wpisz ID faktury kosztowej" aria-label="Number"
+        matInput formControlName="idCost" >
+      <mat-error *ngIf="formOptions.controls['idCost'].errors?.required">
+        Pole wymagane</mat-error>
+    </mat-form-field>
+  </form>
+</div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <button mat-raised-button color="default" (click)="exitDialog()">Zamknij</button>
+  <button mat-raised-button type="submit" color="primary" (click)="addCost()">Dodaj</button>
+</div>
+<div class="spinner_center fixed" *ngIf="invoiceLoading">
+  <mat-spinner></mat-spinner>
+</div>

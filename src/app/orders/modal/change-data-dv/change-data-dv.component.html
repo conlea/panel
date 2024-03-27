@@ -1,0 +1,65 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{data.header}}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__content" mat-dialog-content>
+  <form [formGroup]="formOptions" (ngSubmit)="editData()" #formDirective="ngForm">
+    <mat-form-field>
+      <mat-label>Płatnikiem jest</mat-label>
+      <mat-select formControlName="payer" (selectionChange)="changePayer()">
+        <mat-option [value]="0">Płatnikiem jest Osoba fizyczna</mat-option>
+        <mat-option [value]="1">Płatnikiem jest Firma</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <ng-container *ngIf="payerIs > 0">
+      <mat-form-field>
+        <input matInput type="text" name="Nazwa firmy" formControlName="companyName" placeholder="Nazwa firmy">
+        <mat-error *ngIf="formOptions.controls['companyName'].errors?.required">
+          Pole wymagane</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="text" name="ulica" formControlName="companyStreet" placeholder="Ulica">
+        <mat-error *ngIf="formOptions.controls['companyStreet'].errors?.required">
+          Pole wymagane</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="text" name="miasto" formControlName="companyCity" placeholder="Miasto">
+        <mat-error *ngIf="formOptions.controls['companyCity'].errors?.required">
+          Pole wymagane</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="text" name="kod pocztowy" formControlName="companyPostCode" placeholder="Kod pocztowy">
+        <mat-error *ngIf="formOptions.controls['companyPostCode'].errors?.required">
+          Pole wymagane</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="text" name="nip" formControlName="companyVatID" placeholder="NIP">
+        <mat-error *ngIf="formOptions.controls['companyVatID'].errors?.required">
+          Pole wymagane</mat-error>
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="payerIs == 0">
+      <mat-form-field>
+        <input matInput type="text" name="ulica" formControlName="personStreet" placeholder="Ulica">
+        <mat-error *ngIf="formOptions.controls['personStreet'].errors?.required">
+          Pole wymagane</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="text" name="miasto" formControlName="personCity" placeholder="Miasto">
+        <mat-error *ngIf="formOptions.controls['personCity'].errors?.required">
+          Pole wymagane</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="text" name="kod pocztowy" formControlName="personPostCode" placeholder="Kod pocztowy">
+        <mat-error *ngIf="formOptions.controls['personPostCode'].errors?.required">
+          Pole wymagane</mat-error>
+      </mat-form-field>
+    </ng-container>
+  </form>
+</div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <button mat-raised-button color="default" (click)="exitDialog()">Zamknij</button>
+  <button mat-raised-button type="submit" (click)="formDirective.ngSubmit.emit()" color="primary">Zapisz</button>
+</div>

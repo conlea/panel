@@ -1,0 +1,252 @@
+#settings {
+
+  .nav-tabs {
+    a {
+      background-color: transparent;
+      font-size: 1.5rem;
+      line-height: 1.9rem;
+      color: #8997AB;
+      padding: 5px 10px;
+      font-weight: 600;
+      min-width: 120px;
+      text-align: center;
+      border: 0;
+      border-radius: 0;
+      position: relative;
+
+      &:before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: auto;
+        right: 0;
+        width: 0%;
+        background-color: #8997AB;
+        height: 2px;
+        transition: all 0.3s ease;
+      }
+
+      &.active {
+        color: #374052;
+
+        &:before {
+          width: 100%;
+          right: auto;
+          left: 0;
+        }
+      }
+    }
+  }
+
+  .eventOption {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-top: 2rem;
+
+    .dateEventSelect {
+      h4 {
+        margin: 0;
+        margin-left: 15px;
+        font-size: 1.6rem;
+        line-height: 2rem;
+        font-weight: 600;
+        color: #374052;
+      }
+    }
+
+    &>div {
+      display: flex;
+      align-items: center;
+      padding: 0;
+
+      .searchEvent {
+        position: relative;
+
+        input {
+          border-radius: 28px;
+          border: 1px solid #8997AB;
+          font-size: 1.3rem;
+          line-height: 1.7rem;
+          padding: 5px 25px 5px 15px;
+
+          &:focus {
+            outline: -webkit-focus-ring-color auto 0px;
+          }
+        }
+
+        mat-icon {
+          position: absolute;
+          top: 50%;
+          right: 0;
+          transform: translate(-50%, -50%);
+          font-size: 1.8rem;
+          width: 1.8rem;
+          height: 1.8rem;
+          color: #8997AB;
+        }
+      }
+
+      .addEvent {
+        margin-right: 15px;
+
+        p {
+          cursor: pointer;
+          font-size: 1.3rem;
+          line-height: 1.7rem;
+          color: #0076FF;
+          margin: 0;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+
+          mat-icon {
+            margin-left: 5px;
+          }
+        }
+      }
+
+      .refreshList {
+        height: 24px;
+        width: 24px;
+        background-color: #0076FF;
+        border-radius: 24px;
+        color: #fff;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        margin-left: 15px;
+
+        span {
+          font-size: 1.6rem;
+        }
+      }
+    }
+  }
+
+  .tab-content {
+    .listTraining {
+      mat-table {
+        background: transparent;
+
+        .mat-row {
+          position: relative;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background-color: #F1F5F8;
+          }
+        }
+
+        .mat-row-link {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          left: 0;
+          top: 0;
+          cursor: pointer;
+          margin-left: 20px;
+        }
+
+        .mat-header-cell.cdk-header-cell {
+          color: #8997AB;
+          font-weight: 700;
+          font-size: 1.4rem;
+          line-height: 1.8rem;
+        }
+
+        // .mat-row.cdk-row {
+        //   border-bottom-width: 0;
+        // }
+
+        .mat-cell.cdk-cell {
+          color: #374052;
+          font-size: 1.4rem;
+          line-height: 1.8rem;
+        }
+
+      }
+
+      mat-paginator {
+        background: transparent;
+      }
+
+      h4 {}
+
+      .listItem {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        position: relative;
+
+        p {
+          margin: 0;
+        }
+
+        .mat-row-link {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          left: 0;
+          top: 0;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+
+
+  .searchBlock {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+
+    mat-form-field {
+      margin-right: 10px;
+    }
+  }
+
+  .IcoDon {
+    color: green;
+  }
+
+  .IcoError {
+    color: red;
+  }
+
+  .editStatus {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    h4 {
+      font-size: 1.8rem;
+      line-height: 2.5rem;
+      margin: 0;
+      flex: 1;
+    }
+  }
+
+  .listItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    p {
+      margin: 0;
+    }
+
+    button {
+      min-width: 35px;
+      margin: 0 3px;
+      padding: 0;
+    }
+  }
+}

@@ -1,0 +1,33 @@
+<section class="section" id="login_page">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 col-sm-12 col-md-6 offset-md-3">
+        <img src="../../../assets/img/logoLMIT.png" alt="">
+        <form [formGroup]="formOptions" (ngSubmit)="login(formDirective)" #formDirective="ngForm">
+          <h3>Logowanie</h3>
+          <mat-form-field class="example-full-width">
+            <input matInput type="email" formControlName="email" name="email" placeholder="Email address">
+            <mat-error *ngIf="formOptions.controls['email'].errors?.required">
+              Pole wymagane</mat-error>
+            <mat-error *ngIf="formOptions.controls['email'].errors?.email">Błędny email
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field class="example-full-width">
+            <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" name="password"
+              placeholder="Hasło">
+            <button mat-icon-button type="button" matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+              [attr.aria-pressed]="hide">
+              <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-error *ngIf="formOptions.controls['password'].errors?.required">
+              Pole wymagane</mat-error>
+          </mat-form-field>
+          <button type="submit" mat-raised-button color="primary" [disabled]="formOptions.invalid">Zaloguj</button>
+        </form>
+        <div class="spinner_center" *ngIf="isLoadingToLogIn">
+          <mat-spinner></mat-spinner>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

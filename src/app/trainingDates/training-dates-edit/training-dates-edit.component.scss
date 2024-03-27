@@ -1,0 +1,76 @@
+#trainingDatesDetails {
+  .cdk-column-action {
+
+    button {}
+  }
+
+  .mat-table {
+    .mat-column-action {
+      width: 85px;
+      padding-right: 0;
+      // padding-right: 15px;
+
+      button,
+      a {
+        min-width: 35px;
+        margin: 0 3px;
+        padding: 0;
+      }
+    }
+  }
+
+  .editTrainingDates {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+
+    &>div {
+      margin: 0 5px;
+
+      button,
+      a {
+        margin: 0 5px;
+      }
+
+      fa-icon {
+        font-size: 24px;
+      }
+    }
+  }
+
+  .titleEdit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+
+    h2 {
+      margin: 0;
+    }
+
+    button {
+      margin: 0 !important;
+    }
+
+  }
+
+  .logBox {
+    padding: 10px 40px;
+
+    h2 {
+      color: #374052;
+      font-size: 16px;
+      line-height: 20px;
+      margin: 10px 0;
+      font-weight: 600;
+    }
+
+    p {
+      color: #8997AB;
+      font-size: 16px;
+      line-height: 20px;
+      margin: 5px 0;
+    }
+  }
+}

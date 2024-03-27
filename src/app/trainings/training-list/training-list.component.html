@@ -1,0 +1,309 @@
+<section class="section" id="training">
+  <div class="container-fluid">
+    <div class="eventOption">
+      <div class="dateEventSelect"></div>
+      <div>
+        <!-- [routerLink]="['edit']" -->
+        <div class="addEvent" [routerLink]="['details']">
+          <p>Dodaj produkt <mat-icon>add_circle</mat-icon></p>
+        </div>
+        <div class="searchEvent">
+          <input
+            (keyup)="applyFilter($event.target.value)"
+            [(ngModel)]="searchTraining"
+            placeholder="Szukaj produkt"
+          />
+          <mat-icon>search</mat-icon>
+        </div>
+        <div
+          class="refreshList"
+          matTooltip="Odśwież listę"
+          matTooltipPosition="left"
+          (click)="ngOnInit()"
+        >
+          <span class="material-icons">refresh</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <a
+        class="nav-link active"
+        id="nav-profile-tab"
+        data-toggle="tab"
+        href="#nav-profile"
+        role="tab"
+        aria-controls="nav-profile"
+        aria-selected="false"
+        (click)="onTabChanged(0)"
+        >Bieżące</a
+      >
+      <a
+        class="nav-link"
+        id="nav-contact-tab"
+        data-toggle="tab"
+        href="#nav-contact"
+        role="tab"
+        aria-controls="nav-contact"
+        aria-selected="false"
+        (click)="onTabChanged(1)"
+        >Archiwalne</a
+      >
+      <!-- <a class="nav-link" id="allEvent-tab" data-toggle="tab" href="#allEvent" role="tab" aria-controls="allEvent" aria-selected="true" (click)="onTabChanged(2)">Wszystkie</a> -->
+    </div>
+    <div class="tab-content" id="nav-tabContent">
+      <!-- bieżące -->
+      <div
+        class="tab-pane fade show active"
+        id="nav-profile"
+        role="tabpanel"
+        aria-labelledby="nav-profile-tab"
+      >
+        <div class="listTraining" *ngIf="!trainingActiveLoading">
+          <div class="filterList">
+            <div class="filterType"></div>
+            <div class="setColumn" (click)="setColumns()">
+              <p>Dostosuj kolumny</p>
+            </div>
+          </div>
+          <mat-table [dataSource]="activeProductList">
+            <!-- firstname Column -->
+            <ng-container matColumnDef="code">
+              <mat-header-cell *matHeaderCellDef>
+                Kod produktu
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.kod }}
+                <a
+                  fxFlexFill
+                  [routerLink]="[element.id, 'details']"
+                  class="mat-row-link"
+                ></a>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="name">
+              <mat-header-cell *matHeaderCellDef>
+                Nazwa produktu
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.name_pl }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="exam">
+              <mat-header-cell *matHeaderCellDef> Egzamin </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-checkbox
+                  [checked]="element.is_exam_available"
+                  disabled
+                ></mat-checkbox>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="examprice">
+              <mat-header-cell *matHeaderCellDef>
+                Cena egzaminu
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.price_exam_PLN }} PLN
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="examRequired">
+              <mat-header-cell *matHeaderCellDef>
+                Egzamin wymagany</mat-header-cell
+              >
+              <mat-cell *matCellDef="let element">
+                <mat-checkbox
+                  [checked]="element.is_exam_required"
+                  disabled
+                ></mat-checkbox>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="book">
+              <mat-header-cell *matHeaderCellDef>
+                Materiały szkoleniowe
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-checkbox
+                  [checked]="element.is_book_available"
+                  disabled
+                ></mat-checkbox>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="bookprice">
+              <mat-header-cell *matHeaderCellDef>
+                Cena materiałów szkoleniowych
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.price_book_PLN }} PLN
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="take2resit">
+              <mat-header-cell *matHeaderCellDef>
+                Take2 Re-sit
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-checkbox
+                  [checked]="element.is_Take2_available"
+                  disabled
+                ></mat-checkbox>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="status">
+              <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span [ngClass]="element.status">
+                  {{ element.status }}
+                </span>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row
+              *matHeaderRowDef="displayedColumns"
+            ></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+          </mat-table>
+          <mat-paginator
+            #paginatorListTraining
+            [pageSizeOptions]="[25, 50, 100]"
+          >
+          </mat-paginator>
+        </div>
+        <div class="spinner_center" *ngIf="trainingActiveLoading">
+          <mat-spinner></mat-spinner>
+        </div>
+      </div>
+
+      <div
+        class="tab-pane fade"
+        id="nav-contact"
+        role="tabpanel"
+        aria-labelledby="nav-contact-tab"
+      >
+        <div class="listTraining" *ngIf="!trainingArchiveLoading">
+          <div class="filterList">
+            <div class="filterType"></div>
+            <div class="setColumn" (click)="setColumns()">
+              <p>Dostosuj kolumny</p>
+            </div>
+          </div>
+          <mat-table [dataSource]="archivedProductList">
+            <!-- firstname Column -->
+            <ng-container matColumnDef="code">
+              <mat-header-cell *matHeaderCellDef>
+                Kod produktu
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.kod }}
+                <a
+                  fxFlexFill
+                  [routerLink]="[element.id, 'details']"
+                  class="mat-row-link"
+                ></a>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="name">
+              <mat-header-cell *matHeaderCellDef>
+                Nazwa produktu
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.name_pl }}
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="exam">
+              <mat-header-cell *matHeaderCellDef> Egzamin </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-checkbox
+                  [checked]="element.is_exam_available"
+                  disabled
+                ></mat-checkbox>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="examprice">
+              <mat-header-cell *matHeaderCellDef>
+                Cena egzaminu
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.price_exam }} PLN
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="examRequired">
+              <mat-header-cell *matHeaderCellDef>
+                Egzamin wymagany</mat-header-cell
+              >
+              <mat-cell *matCellDef="let element">
+                <mat-checkbox
+                  [checked]="element.is_exam_required"
+                  disabled
+                ></mat-checkbox>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="book">
+              <mat-header-cell *matHeaderCellDef>
+                Materiały szkoleniowe
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-checkbox
+                  [checked]="element.price_book_PLN > 0"
+                  disabled
+                ></mat-checkbox>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="bookprice">
+              <mat-header-cell *matHeaderCellDef>
+                Cena materiałów szkoleniowych
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{ element.price_book_PLN }} PLN
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="take2resit">
+              <mat-header-cell *matHeaderCellDef>
+                Take2 Re-sit
+              </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-checkbox
+                  [checked]="element.is_Take2_available"
+                  disabled
+                ></mat-checkbox>
+              </mat-cell>
+            </ng-container>
+            <!-- firstname Column -->
+            <ng-container matColumnDef="status">
+              <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span [ngClass]="element.status">
+                  {{ element.status }}
+                </span>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row
+              *matHeaderRowDef="displayedColumns"
+            ></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+          </mat-table>
+          <mat-paginator
+            #paginatorArchiveListTraining
+            [pageSizeOptions]="[25, 50, 100]"
+          >
+          </mat-paginator>
+        </div>
+        <div class="spinner_center" *ngIf="trainingArchiveLoading">
+          <mat-spinner></mat-spinner>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

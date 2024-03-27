@@ -1,0 +1,35 @@
+.example-radio-group {
+  display: flex;
+  flex-direction: column;
+  margin: 5px 0 15px 0;
+  align-items: flex-start;
+}
+
+.example-radio-button {
+  margin: 5px 0 0 5px;
+}
+.radioContent {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+  width: 100%;
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: 0 solid #000;
+  }
+  .userOption {
+    display: flex;
+    align-items: center;
+    margin-left: 30px;
+    & > span {
+      cursor: pointer;
+    }
+    .userDelete {
+      display: flex;
+      align-items: center;
+      margin-right: 10px;
+      margin-left: -5px;
+    }
+  }
+}

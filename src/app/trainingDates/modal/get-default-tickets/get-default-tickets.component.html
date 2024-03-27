@@ -1,0 +1,130 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{ data.header }}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__content setDefaultTickets" mat-dialog-content>
+  <p *ngIf="!addDefaultTickets">
+    Do wydarzenia zostaną dodane domyślne pakiety cenowe dla produktu
+    {{ data.trainingName }}.
+    <br />
+    Pakiety będzie można dowolnie zmieniać, edytując wydarzenie.
+  </p>
+  <form
+    [formGroup]="formOptionsTicket"
+    (ngSubmit)="saveDefaultTicketsDate()"
+    #formDirective2="ngForm"
+  >
+    <ng-container *ngIf="addDefaultTickets">
+      <div class="row">
+        <div class="col-12">
+          <ng-container *ngFor="let ticket of defaultTickets; let i = index">
+            <div class="defaultTicket">
+              <div class="defaultTicket__name">
+                <p>
+                  Pakiet: <strong>{{ ticket.name_pl }}</strong>
+                </p>
+                <p *ngIf="ticket.price_PLN">
+                  Cena: <strong>{{ ticket.price_PLN }}PLN</strong>
+                  <strong *ngIf="ticket.price_EUR">
+                    /{{ ticket.price_EUR }}EUR</strong
+                  ><strong *ngIf="ticket.price_GBP">
+                    /{{ ticket.price_GBP }}GBP</strong
+                  ><strong *ngIf="ticket.price_USD">
+                    /{{ ticket.price_USD }}USD</strong
+                  >
+                </p>
+                <p *ngIf="ticket.useLimit">
+                  Liczba dostępnych biletów:
+                  <strong>{{ ticket.useLimit }}</strong>
+                </p>
+              </div>
+              <div class="defaultTicket__date">
+                <mat-form-field>
+                  <mat-label>Data ważności pakietu od:</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="dp1"
+                    name="data od"
+                    disabled
+                    [formControlName]="'date_start_' + ticket.id"
+                    [min]="dateNow"
+                    [max]="dateMax"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="dp1"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #dp1 disabled="false"></mat-datepicker>
+                  <!-- <mat-error *ngIf="
+                  formOptionsTicket.controls['date_start_' + i].errors?.required">
+                Pole wymagane</mat-error> -->
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Data ważności pakietu do</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="dp2"
+                    name="data do"
+                    disabled
+                    [formControlName]="'date_end_' + ticket.id"
+                    [min]="dateNow"
+                    [max]="dateMax"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="dp2"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #dp2 disabled="false"></mat-datepicker>
+                  <!-- <mat-error
+                *ngIf="
+                  formOptionsTicket.controls['date_end_' + i].errors
+                    ?.required
+                "
+              >
+                Pole wymagane</mat-error
+              > -->
+                </mat-form-field>
+              </div>
+              <div class="defaultTicket__remove">
+                <strong (click)="removeDefaultTicket(i, ticket.id)"
+                  ><mat-icon>delete</mat-icon> Usuń pakiet</strong
+                >
+              </div>
+            </div>
+            <hr />
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+  </form>
+</div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <ng-container *ngIf="!addDefaultTickets; else addDefaultTicketsBtn">
+    <button
+      mat-raised-button
+      type="submit"
+      (click)="getDefaultTickets()"
+      color="primary"
+    >
+      Tak
+    </button>
+    <button mat-raised-button color="default" (click)="exitDialog()">
+      Nie
+    </button>
+  </ng-container>
+  <ng-template #addDefaultTicketsBtn>
+    <button
+      mat-raised-button
+      type="submit"
+      (click)="saveDefaultTicketsDate()"
+      color="primary"
+    >
+      Zapisz
+    </button>
+    <button mat-raised-button color="default" (click)="getBack()">
+      Anuluj
+    </button>
+  </ng-template>
+</div>

@@ -1,0 +1,14 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{data.header}}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+
+<div class="modal__content" mat-dialog-content>
+  <ckeditor [(ngModel)]="comment" [config]="config" [editor]="Editor" ></ckeditor>
+</div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <button mat-raised-button color="default" (click)="exitDialog()">Zamknij</button>
+  <button mat-raised-button type="submit" (click)="saveComment()" color="primary">Zapisz</button>
+</div>

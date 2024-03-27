@@ -1,0 +1,16 @@
+form {
+  display: flex;
+
+  .countProduct {
+    max-width: 80px;
+    margin-right: 10px;
+  }
+
+  .nameProduct {
+    margin-right: 10px;
+  }
+
+  .priceProduct {
+    max-width: 100px;
+  }
+}

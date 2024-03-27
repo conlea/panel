@@ -1,0 +1,328 @@
+<section class="section" id="settings">
+  <div class="container-fluid">
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <a class="nav-link active" id="nav-users-tab" data-toggle="tab" href="#nav-users" role="tab" aria-controls="nav-users" aria-selected="false" (click)="onTabChanged(0)">Lista użytkowników</a>
+      <a class="nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-organization" role="tab" aria-controls="nav-organization" aria-selected="false" (click)="onTabChanged(1)">Lista organizacji</a>
+      <a class="nav-link" id="allEvent-tab" data-toggle="tab" href="#nav-property" role="tab" aria-controls="nav-property" aria-selected="true" (click)="onTabChanged(2)">Parametry wydarzeń</a>
+    </div>
+    <div class="tab-content" id="nav-tabContent">
+      <div class="tab-pane fade show active" id="nav-users" role="tabpanel" aria-labelledby="nav-users-tab">
+        <div class="listTraining" *ngIf="!isLoadingAdmin">
+          <div class="eventOption">
+            <div class="dateEventSelect"></div>
+            <div>
+              <div class="addEvent" (click)='addAdmin()'>
+                <p>Dodaj użytkownika <mat-icon>add_circle</mat-icon></p>
+              </div>
+              <div class="searchEvent">
+                  <input (keyup)="applyFilter($event.target.value)" [(ngModel)]="searchPerson" placeholder="Szukaj użytkownika">
+                  <mat-icon>search</mat-icon>
+              </div>
+              <div class="refreshList" matTooltip="Odśwież listę" matTooltipPosition="left" (click)="ngOnInit()">
+                <span class="material-icons">refresh</span>
+              </div>
+            </div>
+          </div>
+          <mat-table [dataSource]="dataSource">
+            <!-- ID Column -->
+            <ng-container matColumnDef="id">
+              <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+            </ng-container>
+
+            <!-- firstname Column -->
+            <ng-container matColumnDef="first_name">
+              <mat-header-cell *matHeaderCellDef> Imię </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                {{element.first_name}}
+                <div fxFlexFill (click)="editAdmin(element)" *ngIf="logUser.role == 0 || element.id == logUser.id" class="mat-row-link"></div>
+              </mat-cell>
+            </ng-container>
+
+            <!-- surname Column -->
+            <ng-container matColumnDef="last_name">
+              <mat-header-cell *matHeaderCellDef> Nazwisko </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.last_name}} </mat-cell>
+            </ng-container>
+
+            <!-- position Email -->
+            <ng-container matColumnDef="email">
+              <mat-header-cell *matHeaderCellDef> Email </mat-header-cell>
+              <mat-cell *matCellDef="let element"> <a href="mailto:{{element.email}}">{{element.email}}</a> </mat-cell>
+            </ng-container>
+
+            <!-- position Email -->
+            <ng-container matColumnDef="active">
+              <mat-header-cell *matHeaderCellDef> Aktywny </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <span class="IcoDon" *ngIf="element.active > 0; else noActive"><i class="material-icons">
+                    done
+                  </i>
+                </span>
+                <ng-template #noActive>
+                  <span class="IcoError"><i class="material-icons">
+                      highlight_off
+                    </i></span>
+                </ng-template>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+          <mat-paginator #paginatorListAdmin [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
+        </div>
+        <div class="spinner_center" *ngIf="isLoadingAdmin">
+          <mat-spinner></mat-spinner>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="nav-organization" role="tabpanel" aria-labelledby="nav-profile-tab">
+        <div class="listTraining" *ngIf="!isLoadingCompany">
+          <div class="eventOption">
+            <div class="dateEventSelect"></div>
+            <div>
+              <div class="addEvent" [routerLink]="['company-details']">
+                <p>Dodaj firmę <mat-icon>add_circle</mat-icon></p>
+              </div>
+              <!-- <div class="searchEvent">
+                  <input (keyup)="applyFilter($event.target.value)" [(ngModel)]="searchPerson" placeholder="Szukaj użytkownika">
+                  <mat-icon>search</mat-icon>
+              </div> -->
+              <!-- <div class="refreshList" matTooltip="Odśwież listę" matTooltipPosition="left" (click)="ngOnInit()">
+                <span class="material-icons">refresh</span>
+              </div> -->
+            </div>
+          </div>
+            <mat-list>
+              <ng-container *ngFor="let company of companyList">
+                <mat-list-item>
+                  <span class="listItem">
+                    <p>{{company.name}}</p>
+                    <!-- (click)='editCompany(company)' -->
+                    <a fxFlexFill  [routerLink]="[company.id, 'company-details']" class="mat-row-link"></a>
+                  </span>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+              </ng-container>
+            </mat-list>
+        </div>
+        <div class="spinner_center" *ngIf="isLoadingCompany">
+          <mat-spinner></mat-spinner>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="nav-property" role="tabpanel" aria-labelledby="nav-profile-tab">
+        <div class="listTraining">
+          <div class="eventOption">
+            <div class="dateEventSelect">
+              <h4>Lista statusów wydarzenia</h4>
+            </div>
+            <div>
+              <div class="addEvent" (click)='addStatus()'>
+                <p>Dodaj status <mat-icon>add_circle</mat-icon></p>
+              </div>
+            </div>
+          </div>
+          <div class="statusList" *ngIf="!isLoadingStatus">
+            <mat-list>
+              <ng-container *ngFor="let status of statusList">
+                <mat-list-item>
+                  <span class="listItem">
+                    <p>{{status.name_pl}}</p>
+                    <div fxFlexFill (click)='editStatus(status)' class="mat-row-link"></div>
+                  </span>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+              </ng-container>
+            </mat-list>
+          </div>
+          <div class="spinner_center" *ngIf="isLoadingStatus">
+            <mat-spinner></mat-spinner>
+          </div>
+          <div class="eventOption">
+            <div class="dateEventSelect">
+              <h4>Lista dostępnych języków w panelu</h4>
+            </div>
+            <div>
+              <div class="addEvent" (click)='addNewLang()'>
+                <p>Dodaj nowy <mat-icon>add_circle</mat-icon></p>
+              </div>
+            </div>
+          </div>
+          <div class="statusList" *ngIf="!isLoadingLang">
+            <mat-list>
+              <ng-container *ngFor="let lang of langList">
+                <mat-list-item>
+                  <span class="listItem">
+                    <p>{{lang.name_pl}}</p>
+                    <div fxFlexFill (click)='editLang(lang)' class="mat-row-link"></div>
+                  </span>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+              </ng-container>
+            </mat-list>
+          </div>
+          <div class="spinner_center" *ngIf="isLoadingLang">
+            <mat-spinner></mat-spinner>
+          </div>
+          <div class="eventOption">
+            <div class="dateEventSelect">
+              <h4>Lista dostępnych walut w panelu</h4>
+            </div>
+            <div>
+              <div class="addEvent" (click)='addCurrency()'>
+                <p>Dodaj walutę <mat-icon>add_circle</mat-icon></p>
+              </div>
+            </div>
+          </div>
+          <div class="statusList" *ngIf="!isLoadingCurrency">
+            <mat-list>
+              <ng-container *ngFor="let currency of currencyList">
+                <mat-list-item>
+                  <span class="listItem">
+                    <p>{{currency.name}}</p>
+                    <div fxFlexFill (click)='editCurrency(currency)' class="mat-row-link"></div>
+                  </span>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+              </ng-container>
+            </mat-list>
+          </div>
+          <div class="spinner_center" *ngIf="isLoadingCurrency">
+            <mat-spinner></mat-spinner>
+          </div>
+          <div class="eventOption">
+            <div class="dateEventSelect">
+              <h4>Lista atrybutów biletów</h4>
+            </div>
+            <div>
+              <div class="addEvent" (click)='addAttr()'>
+                <p>Dodaj atrybut <mat-icon>add_circle</mat-icon></p>
+              </div>
+            </div>
+          </div>
+          <div class="attrList" *ngIf="!isLoadingTicketAttr">
+            <mat-list>
+              <ng-container *ngFor="let attr of attrList">
+                <mat-list-item>
+                  <span class="listItem">
+                    <p>{{attr.name_pl}} (pozycja: {{attr.orderBy}})</p>
+                    <div fxFlexFill (click)='editAttr(attr)' class="mat-row-link"></div>
+                  </span>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+              </ng-container>
+            </mat-list>
+          </div>
+          <div class="spinner_center" *ngIf="isLoadingTicketAttr">
+            <mat-spinner></mat-spinner>
+          </div>
+          <div class="eventOption">
+            <div class="dateEventSelect">
+              <h4>Rodzaje wydarzeń</h4>
+            </div>
+            <div>
+              <div class="addEvent" (click)='addAttr()'>
+                <p>Dodaj atrybut <mat-icon>add_circle</mat-icon></p>
+              </div>
+            </div>
+          </div>
+          <div class="statusList" *ngIf="!isLoadingEventType">
+            <mat-list>
+              <ng-container *ngFor="let eventT of eventTypeList">
+                <mat-list-item>
+                  <span class="listItem">
+                    <p>{{eventT.name_pl}}</p>
+                    <div fxFlexFill (click)='editEventType(eventT)' class="mat-row-link"></div>
+                  </span>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+              </ng-container>
+            </mat-list>
+          </div>
+          <div class="spinner_center" *ngIf="isLoadingEventType">
+            <mat-spinner></mat-spinner>
+          </div>
+          <div class="eventOption">
+            <div class="dateEventSelect">
+            <h4>Role uczestników</h4>
+            </div>
+            <div>
+              <div class="addEvent" (click)='addNewRole()'>
+                <p>Dodaj role <mat-icon>add_circle</mat-icon></p>
+              </div>
+            </div>
+          </div>
+          <div class="statusList" *ngIf="!isLoadingParticipantRoles">
+            <mat-list>
+              <ng-container *ngFor="let participantR of participantRole">
+                <mat-list-item>
+                  <span class="listItem">
+                    <p>{{participantR.name}}</p>
+                    <div fxFlexFill (click)='editParticipantRole(participantR)' class="mat-row-link"></div>
+                  </span>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+              </ng-container>
+            </mat-list>
+          </div>
+          <div class="spinner_center" *ngIf="isLoadingParticipantRoles">
+            <mat-spinner></mat-spinner>
+          </div>
+          <div class="eventOption">
+            <div class="dateEventSelect">
+            <h4>Lista dostępnych regulaminów</h4>
+            </div>
+            <div>
+              <div class="addEvent" (click)='addNewReg()'>
+                <p>Dodaj nowy regulamin <mat-icon>add_circle</mat-icon></p>
+              </div>
+            </div>
+          </div>
+          <div class="statusList" *ngIf="!isLoadingRegulations">
+            <mat-list>
+              <ng-container *ngFor="let regulation of regulationsList">
+                <mat-list-item>
+                  <span class="listItem">
+                    <p>{{regulation.name}}</p>
+                    <div fxFlexFill (click)='editRegulation(regulation)' class="mat-row-link"></div>
+                  </span>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+              </ng-container>
+            </mat-list>
+          </div>
+          <div class="spinner_center" *ngIf="isLoadingRegulations">
+            <mat-spinner></mat-spinner>
+          </div>
+          <div class="eventOption">
+            <div class="dateEventSelect">
+            <h4>Lista statusów zamówienia</h4>
+            </div>
+            <div>
+              <div class="addEvent" (click)='addStatusOrder()'>
+                <p>Dodaj status <mat-icon>add_circle</mat-icon></p>
+              </div>
+            </div>
+          </div>
+          <div class="statusList" *ngIf="!isLoadingStatusOrder">
+            <mat-list>
+              <ng-container *ngFor="let statusOr of statusOrderList">
+                <mat-list-item>
+                  <span class="listItem">
+                    <p>{{statusOr.name}}</p>
+                    <button mat-raised-button color="primary" (click)='(statusOr)'><span class="material-icons"
+                        matTooltip="Edytuj" matTooltipPosition="left">edit</span></button>
+                    <div fxFlexFill (click)='editStatusOrder(statusOr)' class="mat-row-link"></div>
+                  </span>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+              </ng-container>
+            </mat-list>
+          </div>
+          <div class="spinner_center" *ngIf="isLoadingStatusOrder">
+            <mat-spinner></mat-spinner>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

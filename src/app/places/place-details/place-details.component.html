@@ -1,0 +1,80 @@
+<section class="section" id="placeDetails">
+  <div class="container">
+    <h2 *ngIf="idPlace > 0">Edytuj lokalizacje: {{places.name_pl}}</h2>
+    <h2 *ngIf="idPlace == 0">Dodaj nową lokalizacje</h2>
+    <div class="white_block editPlace">
+      <button mat-raised-button color="primary" routerLink="/places">
+        <mat-icon>keyboard_arrow_left</mat-icon> Wstecz
+      </button>
+      <div>
+        <button type="button" mat-raised-button color="warn" *ngIf="idPlace > 0 && places.active > 0"
+          (click)="removePlace(idPlace)" matTooltip="Usuń metode szkoleń" matTooltipPosition="below"><span
+            class="material-icons">delete_forever</span></button>
+        <button type="submit" form="ngForm" mat-raised-button color="primary" matTooltip="Zapisz zmiany"
+          matTooltipPosition="below"><span class="material-icons">save</span></button>
+      </div>
+    </div>
+    <div class="white_block">
+      <form id="ngForm" [formGroup]="formOptions" (ngSubmit)="updatePlace(formDirective)" #formDirective="ngForm"
+        *ngIf="!placeLoading">
+        <div class="row">
+          <div class="col-12 col-sm-12 col-md-6">
+            <mat-form-field>
+              <input matInput type="text" formControlName="name_pl" placeholder="Nazwa (PL)">
+              <mat-error *ngIf="formOptions.controls['name_pl'].errors?.required">
+                Pole wymagane</mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput type="text" formControlName="name_short_pl" placeholder="Nazwa krótka (PL)">
+              <mat-error *ngIf="formOptions.controls['name_short_pl'].errors?.required">
+                Pole wymagane</mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput type="text" formControlName="country_pl" placeholder="Kraj (PL)">
+              <mat-error *ngIf="formOptions.controls['country_pl'].errors?.required">
+                Pole wymagane</mat-error>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6">
+            <mat-form-field>
+              <input matInput type="text" formControlName="name_en" placeholder="Nazwa (EN)">
+              <mat-error *ngIf="formOptions.controls['name_en'].errors?.required">
+                Pole wymagane</mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput type="text" formControlName="name_short_en" placeholder="Nazwa krótka (EN)">
+              <mat-error *ngIf="formOptions.controls['name_short_en'].errors?.required">
+                Pole wymagane</mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput type="text" formControlName="country_en" placeholder="Kraj (EN)">
+              <mat-error *ngIf="formOptions.controls['country_en'].errors?.required">
+                Pole wymagane</mat-error>
+            </mat-form-field>
+          </div>
+          <div class="col-12">
+            <mat-checkbox color="primary" formControlName="remote">Wydarzenie prowadzone tylko zdalne/online</mat-checkbox>
+            <mat-form-field>
+              <input matInput type="text" formControlName="rank" placeholder="Pozycja">
+              <mat-error *ngIf="formOptions.controls['rank'].errors?.required">
+                Pole wymagane</mat-error>
+            </mat-form-field>
+          </div>
+          <div class="col-12" *ngIf="places.active == 0">
+            <mat-checkbox formControlName="active">Dodaj do listy miejscowości</mat-checkbox>
+            <p style="text-align: center;"><strong>Miejscowość została usunięta z panelu!!</strong></p>
+          </div>
+        </div>
+    <div class="editLast">
+        <p *ngIf="places.userEdit">Edytowane przez: {{places.userEdit?.first_name}}
+          {{places.userEdit?.last_name}}
+          {{places.updated_at | date:"dd-MM-yyyy HH:mm"}}</p>
+        <p *ngIf="places.userCreate">Dodane przez: {{places.userCreate?.first_name}} {{places.userCreate?.last_name}} {{places.created_at | date:"dd-MM-yyyy HH:mm"}}</p>
+    </div>
+      </form>
+      <div class="spinner_center" *ngIf="placeLoading">
+        <mat-spinner></mat-spinner>
+      </div>
+    </div>
+  </div>
+</section>

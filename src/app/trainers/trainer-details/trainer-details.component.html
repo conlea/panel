@@ -1,0 +1,66 @@
+<section class="section" id="trainerDetails">
+  <div class="trainerDetailsHead">
+    <a routerLink="/trainers"><mat-icon>arrow_back</mat-icon> Cofnij</a>
+    <div class="groupBtn" *ngIf="!isLoading">
+      <button
+        mat-raised-button
+        class="removeBtn"
+        (click)="removeTrainer(idTrainer)"
+      >
+        <mat-icon><span class="material-icons">delete_forever</span></mat-icon>
+        Usuń
+      </button>
+      <button
+        mat-raised-button
+        class="editBtn"
+        [routerLink]="'/trainers/' + idTrainer + '/edit'"
+      >
+        <mat-icon><span class="material-icons">edit</span></mat-icon> Edytuj
+      </button>
+    </div>
+  </div>
+  <div class="container">
+    <div class="white_block">
+      <div class="row" *ngIf="!isLoading">
+        <div class="col-12 col-sm-12 col-md-4">
+          <div class="trainerImg">
+            <img *ngIf="trainer.thumb" [src]="trainer.thumb" alt="" />
+            <!-- <ng-template #noThumb> -->
+            <img
+              class="noImg"
+              src="./../../../assets/img/noImg.jpg"
+              alt="noImg"
+            />
+            <!-- </ng-template> -->
+          </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-8">
+          <h4>{{ trainer.name }} {{ trainer.lastName }}</h4>
+          <!-- <p><strong>Stanowisko:</strong> {{ trainer.position }}</p> -->
+          <p><strong>Tel:</strong> {{ trainer.phone }}</p>
+          <p><strong>Bio pl:</strong> {{ trainer.bio_pl }}</p>
+          <p><strong>Bio en:</strong> {{ trainer.bio_en }}</p>
+          <p><strong>Prowadzone szkolenia:</strong></p>
+          <ul *ngIf="trainer.trainings">
+            <li *ngFor="let training of trainer.trainings">
+              {{ training.name_pl }}
+            </li>
+          </ul>
+          <p>
+            <strong>LinkedIn:</strong>
+            <a
+              [href]="trainer.linkedin"
+              target="_blank"
+              rel="noopener noreferrer"
+              ><fa-icon [icon]="faLinkedIn"></fa-icon
+            ></a>
+          </p>
+        </div>
+      </div>
+
+      <div class="spinner_center" *ngIf="isLoading">
+        <mat-spinner></mat-spinner>
+      </div>
+    </div>
+  </div>
+</section>

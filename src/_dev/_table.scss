@@ -1,0 +1,92 @@
+table,
+mat-table {
+  width: 100%;
+
+  .mat-column-id {
+    max-width: 80px;
+  }
+
+  .mat-column-action {
+    max-width: 100px;
+  }
+
+  //Zaakceptowane
+  .tabAccept {
+    border: 1px solid #f2a654;
+    color: #f2a654;
+    border-radius: 15px;
+    padding: 4px 20px;
+    font-size: 1.2rem;
+  }
+
+  //Potwierdzone
+  .tabTicketed {
+    border: 1px solid #46be8a;
+    color: #46be8a;
+    border-radius: 15px;
+    padding: 4px 20px;
+    font-size: 1.2rem;
+  }
+
+  //Nowe
+  .tabSubmitted {
+    border: 1px solid #588fc8;
+    color: #588fc8;
+    border-radius: 15px;
+    padding: 4px 20px;
+    font-size: 1.2rem;
+  }
+
+  //Odrzucone
+  .tabRejected {
+    border: 1px solid #f96868;
+    color: #f96868;
+    border-radius: 15px;
+    padding: 4px 20px;
+    font-size: 1.2rem;
+  }
+
+  //Default
+  .tabDefault {
+    border: 1px solid #545a68;
+    color: #545a68;
+    border-radius: 15px;
+    padding: 4px 20px;
+    font-size: 1.2rem;
+  }
+
+  td {
+    &.mat-column-action {
+      button {
+        margin-right: 10px;
+      }
+
+      span {
+
+        mat-icon {
+          color: rgba($color-text, .7);
+        }
+
+        &.iconActive {
+          mat-icon {
+            color: #46be8a;
+          }
+
+          .tooltipGreen {
+            background: #46be8a;
+          }
+        }
+      }
+    }
+  }
+}
+
+mat-tab-body {
+  padding: 15px;
+}
+
+#trainingDatesDetails {
+  mat-tab-body {
+    padding: 0 !important;
+  }
+}

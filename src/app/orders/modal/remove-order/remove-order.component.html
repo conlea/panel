@@ -1,0 +1,19 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{ data.header }}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__content" mat-dialog-content></div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <button mat-raised-button color="default" (click)="exitDialog()">
+    Zamknij
+  </button>
+  <button
+    mat-raised-button
+    [color]="data.confirmBtnType ? data.confirmBtnType : 'primary'"
+    (click)="remove()"
+  >
+    {{ data.confirmBtnText ? data.confirmBtnText : "Usuń" }}
+  </button>
+</div>

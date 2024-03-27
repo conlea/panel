@@ -1,0 +1,641 @@
+<section class="section" id="companySettings">
+  <div class="container">
+    <div class="white_block editTrainingDates">
+      <button mat-raised-button color="primary" routerLink="/settings">
+        <mat-icon>keyboard_arrow_left</mat-icon> Wstecz
+      </button>
+      <div>
+        <button
+          type="button"
+          mat-raised-button
+          color="warn"
+          *ngIf="idCompany > 0"
+          (click)="removeCompany()"
+          matTooltip="Usuń firmę"
+          matTooltipPosition="below"
+        >
+          <span class="material-icons">delete_forever</span>
+        </button>
+        <button
+          type="submit"
+          form="ngForm"
+          mat-raised-button
+          color="primary"
+          (click)="updateCompany()"
+          matTooltip="Zapisz zmiany"
+          matTooltipPosition="below"
+          *ngIf="idCompany > 0; else newCompany"
+        >
+          <span class="material-icons">save</span>
+        </button>
+        <ng-template #newCompany>
+          <button
+            type="submit"
+            form="ngForm"
+            mat-raised-button
+            color="primary"
+            (click)="addNewCompany()"
+            matTooltip="Zapisz zmiany"
+            matTooltipPosition="below"
+          >
+            <span class="material-icons">save</span>
+          </button>
+        </ng-template>
+        <button
+          type="button"
+          mat-raised-button
+          color="primary"
+          *ngIf="idCompany > 0"
+          (click)="ngOnInit()"
+        >
+          <span class="material-icons">refresh</span>
+        </button>
+      </div>
+    </div>
+    <form
+      [formGroup]="formOptions"
+      #formDirective="ngForm"
+      *ngIf="!isLoadingCompany"
+    >
+      <mat-tab-group
+        mat-stretch-tabs
+        class="example-stretched-tabs mat-elevation-z4"
+        dynamicHeight
+      >
+        <mat-tab label="Informacje ogólne">
+          <mat-form-field>
+            <input
+              matInput
+              type="text"
+              formControlName="name"
+              name="Nazwa"
+              placeholder="Nazwa"
+            />
+            <mat-error *ngIf="formOptions.controls['name'].errors?.required">
+              Pole wymagane</mat-error
+            >
+          </mat-form-field>
+          <mat-form-field>
+            <input
+              matInput
+              type="text"
+              formControlName="urlReg"
+              name="Link do formularza rejestracji"
+              placeholder="Link do formularza rejestracji"
+            />
+            <mat-error *ngIf="formOptions.controls['urlReg'].errors?.required">
+              Pole wymagane</mat-error
+            >
+          </mat-form-field>
+          <mat-checkbox class="example-margin" formControlName="active"
+            >Firma aktywna</mat-checkbox
+          >
+        </mat-tab>
+        <mat-tab label="Integracje">
+          <h3><strong>PayU</strong></h3>
+
+          <mat-form-field>
+            <input
+              matInput
+              type="text"
+              formControlName="payuClientId"
+              placeholder="ID użytkownika"
+            />
+            <mat-error
+              *ngIf="formOptions.controls['payuClientId'].errors?.required"
+            >
+              Pole wymagane</mat-error
+            >
+          </mat-form-field>
+          <mat-form-field>
+            <input
+              matInput
+              [type]="hideAPISignature ? 'password' : 'text'"
+              formControlName="payuClientSecret"
+              placeholder="Klucz dostępu PayU"
+            />
+            <button
+              mat-icon-button
+              type="button"
+              matSuffix
+              (click)="hideAPISignature = !hideAPISignature"
+              [attr.aria-label]="'Hide Signature'"
+              [attr.aria-pressed]="hideAPISignature"
+            >
+              <mat-icon>{{
+                hideAPISignature ? "visibility_off" : "visibility"
+              }}</mat-icon>
+            </button>
+            <mat-error
+              *ngIf="formOptions.controls['payuClientSecret'].errors?.required"
+            >
+              Pole wymagane</mat-error
+            >
+          </mat-form-field>
+          <h3><strong>Fakturownia</strong></h3>
+          <mat-form-field>
+            <input
+              matInput
+              formControlName="fakturowniaNameAccount"
+              placeholder="Nazwa konta / firmy fakturowni (subdomena w fakturowni)"
+            />
+            <mat-error
+              *ngIf="
+                formOptions.controls['fakturowniaNameAccount'].errors?.required
+              "
+            >
+              Pole wymagane</mat-error
+            >
+          </mat-form-field>
+          <mat-form-field>
+            <input
+              matInput
+              [type]="hideFakturowniaAPIKey ? 'password' : 'text'"
+              formControlName="fakturowniaAPIKey"
+              placeholder="Klucz dostępu do API Fakturowni"
+            />
+            <button
+              mat-icon-button
+              type="button"
+              matSuffix
+              (click)="hideFakturowniaAPIKey = !hideFakturowniaAPIKey"
+              [attr.aria-label]="'Hide Signature'"
+              [attr.aria-pressed]="hideFakturowniaAPIKey"
+            >
+              <mat-icon>{{
+                hideFakturowniaAPIKey ? "visibility_off" : "visibility"
+              }}</mat-icon>
+            </button>
+            <mat-error
+              *ngIf="formOptions.controls['fakturowniaAPIKey'].errors?.required"
+            >
+              Pole wymagane</mat-error
+            >
+          </mat-form-field>
+          <mat-form-field>
+            <input
+              matInput
+              type="text"
+              formControlName="department_id"
+              placeholder="Department id Fakturowni"
+            />
+            <mat-error
+              *ngIf="formOptions.controls['department_id'].errors?.required"
+            >
+              Pole wymagane</mat-error
+            >
+          </mat-form-field>
+
+          <h3><strong>SendGrid</strong></h3>
+          <mat-form-field>
+            <input
+              matInput
+              type="text"
+              formControlName="sendgridConfirm_id_pl"
+              placeholder="ID template potwierdzający zgłoszenie PL"
+            />
+            <mat-error
+              *ngIf="
+                formOptions.controls['sendgridConfirm_id_pl'].errors?.required
+              "
+            >
+              Pole wymagane</mat-error
+            >
+          </mat-form-field>
+          <mat-form-field>
+            <input
+              matInput
+              type="text"
+              formControlName="sendgridConfirm_id_en"
+              placeholder="ID template potwierdzający zgłoszenie EN"
+            />
+            <mat-error
+              *ngIf="
+                formOptions.controls['sendgridConfirm_id_en'].errors?.required
+              "
+            >
+              Pole wymagane</mat-error
+            >
+          </mat-form-field>
+
+          <mat-form-field>
+            <input
+              matInput
+              type="text"
+              formControlName="sendgridInvoice_id_pl"
+              placeholder="ID template do wysyłki faktur PL"
+            />
+            <mat-error
+              *ngIf="
+                formOptions.controls['sendgridInvoice_id_pl'].errors?.required
+              "
+            >
+              Pole wymagane</mat-error
+            >
+          </mat-form-field>
+          <mat-form-field>
+            <input
+              matInput
+              type="text"
+              formControlName="sendgridInvoice_id_en"
+              placeholder="ID template do wysyłki faktur EN"
+            />
+            <mat-error
+              *ngIf="
+                formOptions.controls['sendgridInvoice_id_en'].errors?.required
+              "
+            >
+              Pole wymagane</mat-error
+            >
+          </mat-form-field>
+          <mat-form-field>
+            <input
+              matInput
+              type="text"
+              formControlName="sendgridGroupMail_id"
+              placeholder="ID template do wysyłki maili grupowych"
+            />
+            <mat-error
+              *ngIf="
+                formOptions.controls['sendgridGroupMail_id'].errors?.required
+              "
+            >
+              Pole wymagane</mat-error
+            >
+          </mat-form-field>
+        </mat-tab>
+        <mat-tab label="Zgody rejestracyjne">
+          <p>Treść zgody na przetwarzanie danych osobowych w wersji pl</p>
+          <ckeditor
+            [editor]="Editor"
+            [config]="ckeConfig"
+            formControlName="consentPersonalData_pl"
+          ></ckeditor>
+          <br />
+          <p>Treść zgody na przetwarzanie danych osobowych w wersji en</p>
+          <ckeditor
+            [editor]="Editor"
+            [config]="ckeConfig"
+            formControlName="consentPersonalData_en"
+          >
+          </ckeditor>
+          <br />
+          <mat-form-field>
+            <mat-select
+              formControlName="consentPersonalData_HS"
+              placeholder="Wybierz subskrybcje z HS (dane osobowe)"
+            >
+              <mat-option
+                *ngFor="let sub of subscriptionList"
+                [value]="sub.id"
+                >{{ sub.name }}</mat-option
+              >
+            </mat-select>
+            <mat-error
+              *ngIf="
+                formOptions.controls['consentPersonalData_HS'].errors?.required
+              "
+            >
+              Pole wymagane</mat-error
+            >
+          </mat-form-field>
+          <hr />
+          <p>
+            Treść zgody na przetwarzanie danych osobowych w celach
+            marketingowych w wersji pl
+          </p>
+          <ckeditor
+            [editor]="Editor"
+            [config]="ckeConfig"
+            formControlName="consentSalesAndMarketing_pl"
+          >
+          </ckeditor>
+          <br />
+          <p>
+            Treść zgody na przetwarzanie danych osobowych w celach
+            marketingowych w wersji en
+          </p>
+          <ckeditor
+            [editor]="Editor"
+            [config]="ckeConfig"
+            formControlName="consentSalesAndMarketing_en"
+          >
+          </ckeditor>
+          <br />
+          <mat-form-field>
+            <mat-select
+              formControlName="consentSalesAndMarketing_HS"
+              placeholder="Wybierz subskrybcje z HS (Marketing)"
+            >
+              <mat-option
+                *ngFor="let sub of subscriptionList"
+                [value]="sub.id"
+                >{{ sub.name }}</mat-option
+              >
+            </mat-select>
+            <mat-error
+              *ngIf="
+                formOptions.controls['consentSalesAndMarketing_HS'].errors
+                  ?.required
+              "
+            >
+              Pole wymagane</mat-error
+            >
+          </mat-form-field>
+        </mat-tab>
+        <mat-tab label="Potwierdzenie rejestracji">
+          <h3><strong>Potwierdzenie rejestracji template HS </strong></h3>
+          <mat-form-field>
+            <input
+              matInput
+              type="text"
+              formControlName="confirmEmail_id_pl"
+              placeholder="HS Template ID potwierdzający zgłoszenie PL"
+            />
+            <mat-error
+              *ngIf="
+                formOptions.controls['confirmEmail_id_pl'].errors?.required
+              "
+            >
+              Pole wymagane</mat-error
+            >
+          </mat-form-field>
+          <mat-form-field>
+            <input
+              matInput
+              type="text"
+              formControlName="confirmEmail_id_en"
+              placeholder="HS Template ID potwierdzający zgłoszenie EN"
+            />
+            <mat-error
+              *ngIf="
+                formOptions.controls['confirmEmail_id_en'].errors?.required
+              "
+            >
+              Pole wymagane</mat-error
+            >
+          </mat-form-field>
+
+          <p>Temat wiadomości email z potwierdzeniem rejestracji PL</p>
+          <ckeditor
+            [editor]="Editor"
+            [config]="placeholdersConfirmedEmailTitle"
+            formControlName="title_confirmedRegSubject_pl"
+          ></ckeditor>
+          <br />
+          <p>
+            Treść wiadomości email potwierdzającego rejestracje na wydarzenie PL
+          </p>
+          <ckeditor
+            [editor]="Editor"
+            [config]="placeholdersConfirmedEmail"
+            formControlName="confirmedRegSubject_pl"
+          ></ckeditor>
+          <br />
+          <p>Temat wiadomości email z potwierdzeniem EN</p>
+          <ckeditor
+            [editor]="Editor"
+            [config]="placeholdersConfirmedEmailTitle"
+            formControlName="title_confirmedRegSubject_en"
+          ></ckeditor>
+          <br />
+          <p>
+            Treść wiadomości email potwierdzającego rejestracje na wydarzenie EN
+          </p>
+          <ckeditor
+            [editor]="Editor"
+            [config]="placeholdersConfirmedEmail"
+            formControlName="confirmedRegSubject_en"
+          ></ckeditor>
+        </mat-tab>
+        <mat-tab label="Windykacja">
+          <mat-tab-group dynamicHeight>
+            <mat-tab label="Etap I PL">
+              <div class="ckeditorContent">
+                <div class="ckeditorBox">
+                  <p>Temat wiadomości windykacyjnej Etap I PL</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="title_vindication_partI_pl"
+                  ></ckeditor>
+                </div>
+                <div class="ckeditorBox">
+                  <p>Treść wiadomości windykacyjnej Etap I PL</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="vindication_partI_pl"
+                  ></ckeditor>
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Etap I EN">
+              <div class="ckeditorContent">
+                <div class="ckeditorBox">
+                  <p>Temat wiadomości windykacyjnej Etap I EN</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="title_vindication_partI_en"
+                  ></ckeditor>
+                </div>
+                <div class="ckeditorBox">
+                  <p>Treść wiadomości windykacyjnej Etap I EN</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="vindication_partI_en"
+                  ></ckeditor>
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Etap II PL">
+              <div class="ckeditorContent">
+                <div class="ckeditorBox">
+                  <p>Temat wiadomości windykacyjnej Etap II PL</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="title_vindication_partII_pl"
+                  ></ckeditor>
+                </div>
+                <div class="ckeditorBox">
+                  <p>Treść wiadomości windykacyjnej Etap II PL</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="vindication_partII_pl"
+                  ></ckeditor>
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Etap II EN">
+              <div class="ckeditorContent">
+                <div class="ckeditorBox">
+                  <p>Temat wiadomości windykacyjnej Etap II EN</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="title_vindication_partII_en"
+                  ></ckeditor>
+                </div>
+                <div class="ckeditorBox">
+                  <p>Treść wiadomości windykacyjnej Etap II EN</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="vindication_partII_en"
+                  ></ckeditor>
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Etap III PL">
+              <div class="ckeditorContent">
+                <div class="ckeditorBox">
+                  <p>Temat wiadomości windykacyjnej Etap III PL</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="title_vindication_partIII_pl"
+                  ></ckeditor>
+                </div>
+                <div class="ckeditorBox">
+                  <p>Treść wiadomości windykacyjnej Etap III PL</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="vindication_partIII_pl"
+                  ></ckeditor>
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Etap III EN">
+              <div class="ckeditorContent">
+                <div class="ckeditorBox">
+                  <p>Temat wiadomości windykacyjnej Etap III EN</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="title_vindication_partIII_en"
+                  ></ckeditor>
+                </div>
+                <div class="ckeditorBox">
+                  <p>Treść wiadomości windykacyjnej Etap III EN</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="vindication_partIII_en"
+                  ></ckeditor>
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Etap IV PL">
+              <div class="ckeditorContent">
+                <div class="ckeditorBox">
+                  <p>Temat wiadomości windykacyjnej Etap IV PL</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="title_vindication_partIV_pl"
+                  ></ckeditor>
+                </div>
+                <div class="ckeditorBox">
+                  <p>Treść wiadomości windykacyjnej Etap IV PL</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="vindication_partIV_pl"
+                  ></ckeditor>
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Etap IV EN">
+              <div class="ckeditorContent">
+                <div class="ckeditorBox">
+                  <p>Temat wiadomości windykacyjnej Etap IV EN</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="title_vindication_partIV_en"
+                  ></ckeditor>
+                </div>
+                <div class="ckeditorBox">
+                  <p>Treść wiadomości windykacyjnej Etap IV EN</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="vindication_partIV_en"
+                  ></ckeditor>
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Etap V PL">
+              <div class="ckeditorContent">
+                <div class="ckeditorBox">
+                  <p>Temat wiadomości windykacyjnej Etap V PL</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="title_vindication_partV_pl"
+                  ></ckeditor>
+                </div>
+                <div class="ckeditorBox">
+                  <p>Treść wiadomości windykacyjnej Etap V PL</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="vindication_partV_pl"
+                  ></ckeditor>
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Etap V EN">
+              <div class="ckeditorContent">
+                <div class="ckeditorBox">
+                  <p>Temat wiadomości windykacyjnej Etap V EN</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="title_vindication_partV_en"
+                  ></ckeditor>
+                </div>
+                <div class="ckeditorBox">
+                  <p>Treść wiadomości windykacyjnej Etap V EN</p>
+                  <ckeditor
+                    #editor
+                    [editor]="Editor2"
+                    [config]="placeholderConfig"
+                    formControlName="vindication_partV_en"
+                  ></ckeditor>
+                </div>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </mat-tab>
+      </mat-tab-group>
+    </form>
+    <div class="spinner_center" *ngIf="isLoadingCompany">
+      <mat-spinner></mat-spinner>
+    </div>
+  </div>
+</section>

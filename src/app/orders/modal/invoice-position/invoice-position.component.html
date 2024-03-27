@@ -1,0 +1,32 @@
+<div class="modal__header">
+  <h1 mat-dialog-title>
+    {{data.header}}
+  </h1>
+  <span class="material-icons" (click)="exitDialog()">close</span>
+</div>
+<div class="modal__content" mat-dialog-content>
+  <p>Pamiętaj aby wypełnić nazwe produktu z użyciem języka: <strong>{{data.order.formLang | uppercase}}</strong></p>
+  <form [formGroup]="formOptions" (ngSubmit)="addNewPosition()" #formDirective="ngForm">
+    <mat-form-field class="countProduct">
+      <input matInput type="number" min="1" formControlName="countProduct" placeholder="Ilość">
+      <mat-error *ngIf="formOptions.controls['countProduct'].errors?.required">
+        Pole wymagane</mat-error>
+    </mat-form-field>
+    <mat-form-field class="nameProduct">
+      <input matInput type="text" formControlName="nameProduct" placeholder="Nazwa produktu">
+      <mat-error *ngIf="formOptions.controls['nameProduct'].errors?.required">
+        Pole wymagane</mat-error>
+    </mat-form-field>
+    <mat-form-field class="priceProduct">
+      <input matInput type="number" min="0" formControlName="priceProduct" placeholder="Kwota w PLN">
+      <mat-error *ngIf="formOptions.controls['priceProduct'].errors?.required">
+        Pole wymagane</mat-error>
+    </mat-form-field>
+  </form>
+  <p *ngIf="data.invoicePosition?.userCreate">Dodano: {{data.invoicePosition.userCreate.first_name}} {{data.invoicePosition.userCreate.last_name}} {{data.invoicePosition.created_at | date: "dd.MM.yyyy HH:mm"}}</p>
+</div>
+<div class="modal__footer mat_buttons" mat-dialog-actions>
+  <button mat-raised-button color="default" (click)="exitDialog()">Zamknij</button>
+  <!-- (click)="formDirective.ngSubmit.emit()" -->
+  <button mat-raised-button type="submit"  [disabled]="!this.formOptions.valid" (click)="formDirective.ngSubmit.emit()" color="primary">Zapisz</button>
+</div>

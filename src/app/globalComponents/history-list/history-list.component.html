@@ -1,0 +1,130 @@
+<mat-table class="historyTable" [dataSource]="listHistorySource">
+  <ng-container matColumnDef="name">
+    <mat-header-cell *matHeaderCellDef> Nazwa </mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <u
+        (click)="showEmailVindication(element.mailMsg)"
+        *ngIf="element.mailMsg; else noMsg"
+      >
+        <span [innerHTML]="element.comment"></span>
+      </u>
+      <ng-template #noMsg>
+        <span [innerHTML]="element.comment"></span>
+      </ng-template>
+
+      <span class="boxMailEvent" *ngIf="element.mailsLog">
+        <ng-container *ngIf="element.mailsLog.statusId; else oldMsgSendGrid">
+          <span
+            class="material-icons"
+            [matTooltip]="'Status widomości: ' + element.mailsLog.statusName"
+            matTooltipPosition="right"
+            [ngClass]="
+              element.mailsLog.statusName === 'COMPLETE' ? 'mailSuccess' : ''
+            "
+            >send</span
+          >
+          <span
+            class="material-icons"
+            [matTooltip]="
+              'Wynik wysyłki: ' +
+              (element.mailsLog.sendResult !== null
+                ? element.mailsLog.sendResult
+                : 'brak informacji')
+            "
+            matTooltipPosition="right"
+            [ngClass]="
+              element.mailsLog.sendResult === 'SENT' ? 'mailSuccess' : ''
+            "
+            >forward_to_inbox</span
+          >
+          <span
+            class="material-icons"
+            (click)="refreshStatus(element.mailsLog)"
+            matTooltip="Odśwież status wiadomości"
+            matTooltipPosition="right"
+            >refresh</span
+          >
+        </ng-container>
+        <ng-template #oldMsgSendGrid>
+          <span
+            class="material-icons"
+            [matTooltip]="
+              element.mailsLog.deliveredDate != 'Invalid date'
+                ? 'Mail dostarczony: ' +
+                  (element.mailsLog.deliveredDate | date : 'dd/MM/yyyy HH:mm')
+                : ''
+            "
+            matTooltipPosition="right"
+            [ngClass]="
+              element.mailsLog.deliveredDate != 'Invalid date'
+                ? 'mailSuccess'
+                : ''
+            "
+            >forward_to_inbox</span
+          >
+          <span
+            class="material-icons"
+            [matTooltip]="
+              element.mailsLog.openDate != 'Invalid date'
+                ? 'Mail otwarty: ' +
+                  (element.mailsLog.openDate | date : 'dd/MM/yyyy HH:mm')
+                : ''
+            "
+            matTooltipPosition="right"
+            [ngClass]="
+              element.mailsLog.openDate != 'Invalid date' ? 'mailSuccess' : ''
+            "
+            >drafts</span
+          >
+          <span
+            class="material-icons"
+            [matTooltip]="
+              element.mailsLog.clickDate != 'Invalid date'
+                ? 'Kliknięto w treści maila: ' +
+                  (element.mailsLog.clickDate | date : 'dd/MM/yyyy HH:mm')
+                : ''
+            "
+            matTooltipPosition="right"
+            [ngClass]="
+              element.mailsLog.clickDate != 'Invalid date' ? 'mailSuccess' : ''
+            "
+            >ads_click</span
+          >
+          <span
+            *ngIf="element.mailsLog.errorDate"
+            class="material-icons"
+            [matTooltip]="
+              element.mailsLog.errorDate != 'Invalid date'
+                ? 'Odnotowano błąd: ' +
+                  element.mailsLog.errorMsg +
+                  ' ' +
+                  (element.mailsLog.errorDate | date : 'dd/MM/yyyy HH:mm')
+                : ''
+            "
+            matTooltipPosition="right"
+            [ngClass]="
+              element.mailsLog.errorDate != 'Invalid date' ? 'mailError' : ''
+            "
+            >report_problem</span
+          >
+        </ng-template>
+      </span>
+    </mat-cell>
+  </ng-container>
+  <!-- Data start Column -->
+  <ng-container matColumnDef="user">
+    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      {{ element.userCreate?.first_name }}
+      {{ element.userCreate?.last_name }} ({{
+        element.updated_at | date : "dd.MM.yyyy HH:mm"
+      }})
+    </mat-cell>
+  </ng-container>
+  <mat-header-row *matHeaderRowDef="listrHistoryColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: listrHistoryColumns"></mat-row>
+</mat-table>
+<mat-paginator
+  #paginatorOrderHistoryList
+  [pageSizeOptions]="[10, 25, 50, 100]"
+></mat-paginator>
